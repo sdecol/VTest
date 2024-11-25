@@ -12,7 +12,6 @@ namespace nCommon
                                                                        mType(iType),
                                                                        mDefaultValue(iDefaultValue)
     {
-        assert(!iDefaultValue.empty());
         mValue = iDefaultValue;
     }
 

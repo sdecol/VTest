@@ -8,6 +8,8 @@ set(CMAKE_CXX_STANDARD 20)
 set (CLIENT_SRC_FILES
 
 ${CMAKE_SOURCE_DIR}/src/Main/*.cpp
+${CMAKE_SOURCE_DIR}/src/ClientApplication/*.hpp
+${CMAKE_SOURCE_DIR}/src/ClientApplication/*.cpp
 
 )
 
@@ -29,3 +31,4 @@ source_group( TREE ${CMAKE_SOURCE_DIR}/../Common PREFIX Common FILES ${COMMON_SR
 #ADD EXECUTABLE
 
 add_executable (Client ${CLIENT_SRC} ${COMMON_SRC})
+target_link_libraries(Client PRIVATE pthread)

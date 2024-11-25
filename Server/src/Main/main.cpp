@@ -1,6 +1,7 @@
 #include <complex>
 
 #include "ArgumentParser.hpp"
+#include "ServerApplication/ServerApplication.hpp"
 
 #include <iostream>
 #include <vector>
@@ -45,6 +46,12 @@ int main(int argc, char** argv)
         if(!argumentFound)
             std::cout<<"Invalid argument: "<<argument<<std::endl;
     }
+
+    //We start the server application and let it run its cycle
+
+    auto bounds = boundsParser.GetBounds();
+    nApplication::ServerApplication app(portParser.ToInt(), limitParser.ToInt(), bounds.first, bounds.second);
+    app.Start();
 
     return 0;
 }

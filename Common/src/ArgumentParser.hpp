@@ -35,6 +35,9 @@ public:
     //Checks if the given value is valid and assign it to mValue if so
     void ParseValue(const std::string& iValue);
 
+    [[nodiscard]]
+    inline std::string Value() const noexcept { return mValue; }
+
     //Asserts that this argument can be converted into a int and returns the converted value
     [[nodiscard]]
     inline int ToInt() const { assert(mType == Number); return mValue.empty() ? std::stoi(mDefaultValue) : std::stoi(mValue); }
