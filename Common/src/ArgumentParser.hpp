@@ -39,6 +39,9 @@ public:
     [[nodiscard]]
     inline int ToInt() const { assert(mType == Number); return mValue.empty() ? std::stoi(mDefaultValue) : std::stoi(mValue); }
 
+    [[nodiscard]]
+    std::pair<int,int> GetBounds();
+
 private:
 
     std::string mID;
