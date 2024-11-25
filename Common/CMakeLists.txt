@@ -4,7 +4,7 @@ project(VTestCommon)
 
 set (COMMON_SOURCE_FILES
 
-	${CMAKE_CURRENT_LIST_DIR}/nlhomann/*.hpp
+	${CMAKE_CURRENT_LIST_DIR}/src/nlhomann/*.hpp
 
 )
 
@@ -12,6 +12,6 @@ set (COMMON_SOURCE_FILES
 
 include_directories(
 
-        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/src
 )
 
