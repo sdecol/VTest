@@ -4,6 +4,8 @@ project(VTestCommon)
 
 set (COMMON_SOURCE_FILES
 
+		${CMAKE_CURRENT_LIST_DIR}/src/*.hpp
+		${CMAKE_CURRENT_LIST_DIR}/src/*.cpp
 	${CMAKE_CURRENT_LIST_DIR}/src/nlhomann/*.hpp
 
 )
