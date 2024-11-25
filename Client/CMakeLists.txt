@@ -1,0 +1,21 @@
+cmake_minimum_required(VERSION 3.25)
+project(Client)
+
+set(CMAKE_CXX_STANDARD 20)
+
+#SOURCES FILES
+
+set (CLIENT_SRC_FILES
+
+${CMAKE_SOURCE_DIR}/src/Main/*.cpp
+
+)
+
+#GROUPING SOURCE FILES IN A TREE
+
+file( GLOB CLIENT_SRC LIST_DIRECTORIES FALSE ${CLIENT_SRC_FILES})
+source_group( TREE ${CMAKE_SOURCE_DIR}/src PREFIX Client FILES ${CLIENT_SRC})
+
+#ADD EXECUTABLE
+
+add_executable (Client ${CLIENT_SRC})
