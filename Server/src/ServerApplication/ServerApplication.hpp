@@ -54,6 +54,7 @@ namespace nApplication
         int mMaxValue = 0;
 
         std::vector<ConnectedClient> mClients;
+        std::atomic_bool mClientLock = true;
     };
 
 } //nApplication

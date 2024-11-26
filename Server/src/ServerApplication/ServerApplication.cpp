@@ -57,6 +57,7 @@ namespace nApplication
 
     void ServerApplication::AnswerClientConnection(const httplib::Request &iReq, httplib::Response &oRes)
     {
+        mClientLock = false;
         //TODO: manage invalid json
         auto clientData = nlohmann::json::parse(iReq.body);
         const std::string &clientName = clientData["name"];
@@ -79,6 +80,8 @@ namespace nApplication
             answer["connection_status"] = "success";
             oRes.set_content(answer.dump(), "application/json");
         }
+
+        mClientLock = true;
     }
 
     void ServerApplication::ProcessClientAnswer(const httplib::Request &iReq, httplib::Response &oRes)
@@ -136,6 +139,8 @@ namespace nApplication
 
     void ServerApplication::ProcessPing(const httplib::Request &iReq, httplib::Response &oRes)
     {
+        if(!mClientLock)
+            return;
         //TODO handle invalid json
 
         auto body = nlohmann::json::parse(iReq.body);
@@ -168,18 +173,21 @@ namespace nApplication
     void ServerApplication::CheckClientTimeout()
     {
         while (mIsRunning) {
-            auto now = std::chrono::system_clock::now();
-
-            auto it = std::find_if(mClients.begin(), mClients.end(), [now](const ConnectedClient &iClient)
+            if(mClientLock)
             {
-                auto ellapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(
-                    now - iClient.mLastMessageTime);
-                return ellapsedTime.count() > SERVER_TIMEOUT;
-            });
+                auto now = std::chrono::system_clock::now();
 
-            if (it != mClients.end()) {
-                std::cout << "Client timeout: " << it->mName << std::endl;
-                mClients.erase(it);
+                auto it = std::find_if(mClients.begin(), mClients.end(), [now](const ConnectedClient &iClient)
+                {
+                    auto ellapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(
+                            now - iClient.mLastMessageTime);
+                    return ellapsedTime.count() > SERVER_TIMEOUT;
+                });
+
+                if (it != mClients.end()) {
+                    std::cout << "Client timeout: " << it->mName << std::endl;
+                    mClients.erase(it);
+                }
             }
         }
     }
