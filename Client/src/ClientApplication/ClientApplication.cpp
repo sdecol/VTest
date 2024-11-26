@@ -3,6 +3,7 @@
 #include "ClientApplication/HumanProgram.hpp"
 #include "ClientApplication/IAProgram.hpp"
 
+#include "httplib/httplib.h"
 #include "nlohmann/json.hpp"
 
 namespace nApplication
@@ -62,6 +63,18 @@ namespace nApplication
     void ClientApplication::Run()
     {
 
+        //We send a ping to notify the server that this client is still connected
+        nlohmann::json pingBody;
+        pingBody["name"] = mName;
+        auto pingRes = mClient->Post("/ping", pingBody.dump(), "application/json");
+
+        if(!pingRes || pingRes->status != 200)
+        {
+            std::cout<<"Can't reach the server. Closing..."<<std::endl;
+            mIsRunning = false;
+            return;
+        }
+
         std::string number = mProgram->GetInput();
 
         nlohmann::json jsonAnswer;
@@ -79,23 +92,11 @@ namespace nApplication
                 if(serverAnswer["server_answer_type"] == "invalid_number")
                     std::cout<<"Invalid number entered !"<<std::endl;
                 else if(serverAnswer["server_answer_type"] == "number_check") {
-                    auto answer = serverAnswer["server_answer"];
-                    if(answer == "lower")
-                    {
-                        std::cout<<"It's lower !"<<std::endl;
-                        mProgram->GetLowerValue();
-                    }
-                    else if(answer == "upper")
-                    {
-                        std::cout<<"It's upper !"<<std::endl;
-                        mProgram->GetUpperValue();
-                    }
-                    else
-                    {
-                        std::cout<<"Correct answer ! Your score: "<<serverAnswer["score"]<<std::endl;
-                        mIsRunning = false;
+
+                    ProcessServerAnswer(serverAnswer);
+
+                    if(!mIsRunning)
                         return;
-                    }
                 }
                 else if(serverAnswer["server_answer_type"] == "limit_exceeded") {
                     std::cout<<"You exceeded the number of tries. The good answer was:"<<serverAnswer["good_answer"]<<std::endl;
@@ -109,5 +110,26 @@ namespace nApplication
         else
             std::cout<<"Error while sending the answer"<<std::endl;
     }
+
+    void ClientApplication::ProcessServerAnswer(const nlohmann::json &iServerAnswer)
+    {
+        auto answer = iServerAnswer["server_answer"];
+        if(answer == "lower")
+        {
+            std::cout<<"It's lower !"<<std::endl;
+            mProgram->GetLowerValue();
+        }
+        else if(answer == "upper")
+        {
+            std::cout<<"It's upper !"<<std::endl;
+            mProgram->GetUpperValue();
+        }
+        else
+        {
+            std::cout<<"Correct answer ! Your score: "<<iServerAnswer["score"]<<std::endl;
+            mIsRunning = false;
+        }
+    }
+
 
 }

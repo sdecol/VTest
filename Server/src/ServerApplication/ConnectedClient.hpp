@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <string>
 
 namespace nApplication {
@@ -20,6 +21,7 @@ std::string mIP;
 std::string mName;
 int mRandomNumber;
 int mScore;
+std::chrono::time_point<std::chrono::system_clock> mLastMessageTime;
 
 };
 

@@ -1,8 +1,12 @@
 #pragma once
 
 #include "httplib/httplib.h"
+#include "nlohmann/json.hpp"
 
+#include <memory>
 #include <string>
+
+#include "ClientProgram.hpp"
 
 namespace nApplication
 {
@@ -29,6 +33,10 @@ namespace nApplication
         void Start();
 
         void Run();
+
+    private:
+
+        void ProcessServerAnswer(const nlohmann::json& iServerAnswer);
 
     private:
 

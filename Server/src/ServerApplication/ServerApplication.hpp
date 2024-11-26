@@ -35,8 +35,12 @@ namespace nApplication
 
         void ProcessClientAnswer(const httplib::Request& iReq, httplib::Response& oRes);
 
+        void ProcessPing(const httplib::Request& iReq, httplib::Response& oRes);
+
         [[nodiscard]]
         int GenerateRandomNumber() const;
+
+        void CheckClientTimeout();
 
     private:
 

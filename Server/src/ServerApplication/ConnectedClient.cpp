@@ -8,7 +8,7 @@ namespace nApplication {
         mRandomNumber(iNumber),
         mScore(0)
     {
-
+        mLastMessageTime = std::chrono::system_clock::now();
     }
 
 } // nApplication
