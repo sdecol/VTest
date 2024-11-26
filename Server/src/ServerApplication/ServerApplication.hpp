@@ -1,7 +1,11 @@
 #pragma once
 
-#include "httplib/httplib.h"
+#include "ServerApplication/ConnectedClient.hpp"
 
+#include "httplib/httplib.h"
+#include "nlohmann/json.hpp"
+
+#include <random>
 #include <string>
 
 namespace nApplication
@@ -24,6 +28,18 @@ namespace nApplication
 
     private:
 
+        //Checks that the new client is not registered.
+        //If a client with the same name already exists, we notify the client in the answer.
+        //If the client has not been registered yet and has a valid name, we add a new client to the inventory.
+        void AnswerClientConnection(const httplib::Request& iReq, httplib::Response& oRes);
+
+        void ProcessClientAnswer(const httplib::Request& iReq, httplib::Response& oRes);
+
+        [[nodiscard]]
+        int GenerateRandomNumber() const;
+
+    private:
+
         httplib::Server mServer;
 
         bool mIsRunning = false;
@@ -32,6 +48,8 @@ namespace nApplication
         int mLimit = -1;
         int mMinValue = 0;
         int mMaxValue = 0;
+
+        std::vector<ConnectedClient> mClients;
     };
 
 } //nApplication

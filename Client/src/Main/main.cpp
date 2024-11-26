@@ -42,9 +42,20 @@ int main(int argc, char** argv)
             std::cout << "Invalid argument: " << argument << std::endl;
     }
 
+    if(nameParser.Value().empty())
+    {
+        std::cout<<"Enter a valid name"<<std::endl;
+        return 0;
+    }
+
     nApplication::ClientApplication app(nameParser.Value(), hostParser.Value(), portParser.ToInt());
 
     app.Start();
+
+    while(app.IsRunning())
+    {
+        app.Run();
+    }
 
     return 0;
 }

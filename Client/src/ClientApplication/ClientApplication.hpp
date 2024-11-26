@@ -16,16 +16,26 @@ namespace nApplication
 
     public:
 
+        // Getters / setters
+
+        [[nodiscard]]
+        inline bool IsRunning() const noexcept{ return mIsRunning; }
+
+    public:
+
         //Connects to the server
         void Start();
+
+        void Run();
 
     private:
 
         std::string mName;
         std::string mHost;
         int mPort;
+        bool mIsRunning = false;
 
-        httplib::Client* mClient = nullptr;
+        std::unique_ptr<httplib::Client> mClient = nullptr;
     };
 
 } //nApplication
