@@ -7,25 +7,17 @@
 
 int main(int argc, char** argv)
 {
-    std::vector<nCommon::ArgumentParser*> parsers;
-
     nCommon::StringArgumentParser hostParser("host", "localhost");
     hostParser.AddValidArguments({"-h", "--host"});
-    parsers.push_back(&hostParser);
 
     nCommon::IntArgumentParser portParser("port", "4242");
     portParser.AddValidArguments({"-p", "--port"});
-    parsers.push_back(&portParser);
 
     nCommon::StringArgumentParser nameParser("name", "");
     nameParser.AddValidArguments({"-n", "--name"});
-    parsers.push_back(&nameParser);
 
     nCommon::BoolArgumentParser autoParser("auto", "");
     autoParser.AddValidArguments({"-a", "--auto"});
-    parsers.push_back(&autoParser);
-
-    std::string argument;
 
     //We start bind checking arguments received
     nCommon::ArgumentManager::ParseArguments(argc, argv, {&hostParser, &portParser, &nameParser, &autoParser});
@@ -38,7 +30,7 @@ int main(int argc, char** argv)
     }
 
     //Starting application
-    nApplication::ClientApplication app(nameParser.Value(), hostParser.Value(), portParser.Value());
+    nApplication::ClientApplication app(nameParser.Value(), hostParser.Value(), portParser.Value(), autoParser.Value());
 
     app.Start();
 

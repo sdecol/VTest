@@ -9,21 +9,14 @@
 
 int main(int argc, char **argv)
 {
-    std::vector<nCommon::ArgumentParser *> parsers;
-
     nCommon::IntArgumentParser portParser("port", "4242");
     portParser.AddValidArguments({"-p", "--port"});
-    parsers.push_back(&portParser);
 
     nCommon::IntArgumentParser limitParser("limit", "-1");
     limitParser.AddValidArguments({"-l", "--limit"});
-    parsers.push_back(&limitParser);
 
     nCommon::BoundsArgumentParser boundsParser("bounds", "1,100");
     boundsParser.AddValidArguments({"-b", "--bounds"});
-    parsers.push_back(&boundsParser);
-
-    std::string argument;
 
     //We start bind checking arguments received
 
