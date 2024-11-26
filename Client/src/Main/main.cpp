@@ -1,3 +1,4 @@
+#include "ArgumentParser/ArgumentManager.hpp"
 #include "ArgumentParser/BoolArgumentParser.hpp"
 #include "ArgumentParser/IntArgumentParser.hpp"
 #include "ArgumentParser/StringArgumentParser.hpp"
@@ -20,36 +21,23 @@ int main(int argc, char** argv)
     nameParser.AddValidArguments({"-n", "--name"});
     parsers.push_back(&nameParser);
 
+    nCommon::BoolArgumentParser autoParser("auto", "");
+    autoParser.AddValidArguments({"-a", "--auto"});
+    parsers.push_back(&autoParser);
+
     std::string argument;
 
     //We start bind checking arguments received
-    for(int i = 1;i < argc; i+=2) {
+    nCommon::ArgumentManager::ParseArguments(argc, argv, {&hostParser, &portParser, &nameParser, &autoParser});
 
-        argument = argv[i];
-
-        bool argumentFound = false;
-
-        for (auto *parser: parsers) {
-            if (parser->IsValidArgument(argument)) {
-
-                if (i < argc - 1)
-                    parser->ParseValue(argv[i + 1]);
-
-                argumentFound = true;
-
-            }
-        }
-
-        if (!argumentFound)
-            std::cout << "Invalid argument: " << argument << std::endl;
-    }
-
+    //Empty name found, just return
     if(nameParser.Value().empty())
     {
         std::cout<<"Enter a valid name"<<std::endl;
         return 0;
     }
 
+    //Starting application
     nApplication::ClientApplication app(nameParser.Value(), hostParser.Value(), portParser.Value());
 
     app.Start();

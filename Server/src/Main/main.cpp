@@ -1,3 +1,4 @@
+#include "ArgumentParser/ArgumentManager.hpp"
 #include "ArgumentParser/ArgumentParser.hpp"
 #include "ArgumentParser/BoundsArgumentParser.hpp"
 #include "ArgumentParser/IntArgumentParser.hpp"
@@ -6,9 +7,9 @@
 #include <iostream>
 #include <vector>
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-    std::vector<nCommon::ArgumentParser*> parsers;
+    std::vector<nCommon::ArgumentParser *> parsers;
 
     nCommon::IntArgumentParser portParser("port", "4242");
     portParser.AddValidArguments({"-p", "--port"});
@@ -26,28 +27,7 @@ int main(int argc, char** argv)
 
     //We start bind checking arguments received
 
-    for(int i = 1;i < argc; i+=2) {
-
-         argument = argv[i];
-
-         bool argumentFound = false;
-
-         for(auto* parser : parsers)
-         {
-             if(parser->IsValidArgument(argument)) {
-
-                 parser->Activate();
-                 if(i < argc-1)
-                     parser->ParseValue(argv[i+1]);
-
-                 argumentFound = true;
-
-             }
-         }
-
-         if(!argumentFound)
-             std::cout<<"Invalid argument: "<<argument<<std::endl;
-     }
+    nCommon::ArgumentManager::ParseArguments(argc, argv, {&portParser, &limitParser, &boundsParser});
 
     //We start the server application and let it run its cycle
 
