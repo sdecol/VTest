@@ -48,6 +48,7 @@ namespace nApplication
 
         std::unique_ptr<httplib::Client> mClient = nullptr;
         ClientProgram* mProgram = nullptr;
+        std::thread mPingThread;
     };
 
 } //nApplication

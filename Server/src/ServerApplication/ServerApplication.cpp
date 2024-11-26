@@ -86,6 +86,7 @@ namespace nApplication
 
     void ServerApplication::ProcessClientAnswer(const httplib::Request &iReq, httplib::Response &oRes)
     {
+        mClientLock = false;
         auto clientData = nlohmann::json::parse(iReq.body);
 
         const std::string &clientName = clientData["name"];
@@ -135,6 +136,7 @@ namespace nApplication
         }
 
         oRes.set_content(jsonAnswer.dump(), "application/json");
+        mClientLock = true;
     }
 
     void ServerApplication::ProcessPing(const httplib::Request &iReq, httplib::Response &oRes)

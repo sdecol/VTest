@@ -6,6 +6,8 @@
 #include "httplib/httplib.h"
 #include "nlohmann/json.hpp"
 
+using namespace std::chrono_literals;
+
 namespace nApplication
 {
 
@@ -25,6 +27,7 @@ namespace nApplication
     {
         delete mProgram;
         mClient->stop();
+        mPingThread.join();
     }
 
     void ClientApplication::Start()
@@ -58,23 +61,29 @@ namespace nApplication
         }
         else
             std::cout<<"Unable to connect to the server"<<std::endl;
+
+        mPingThread = std::thread([this]{
+
+            while(mIsRunning)
+            {
+                //We send one ping per second only
+                std::this_thread::sleep_for(1000ms);
+                //We send a ping to notify the server that this client is still connected
+                nlohmann::json pingBody;
+                pingBody["name"] = mName;
+                auto pingRes = mClient->Post("/ping", pingBody.dump(), "application/json");
+
+                if (!pingRes || pingRes->status != 200) {
+                    std::cout << "Can't reach the server. Closing..." << std::endl;
+                    mIsRunning = false;
+                    return;
+                }
+            }
+        });
     }
 
     void ClientApplication::Run()
     {
-
-        //We send a ping to notify the server that this client is still connected
-        nlohmann::json pingBody;
-        pingBody["name"] = mName;
-        auto pingRes = mClient->Post("/ping", pingBody.dump(), "application/json");
-
-        if(!pingRes || pingRes->status != 200)
-        {
-            std::cout<<"Can't reach the server. Closing..."<<std::endl;
-            mIsRunning = false;
-            return;
-        }
-
         std::string number = mProgram->GetInput();
 
         nlohmann::json jsonAnswer;
