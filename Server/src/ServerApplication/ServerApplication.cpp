@@ -1,6 +1,7 @@
 #include "ServerApplication/ServerApplication.hpp"
 
 #include <random>
+#include <regex>
 
 namespace nApplication
 {
@@ -86,14 +87,12 @@ namespace nApplication
 
         const std::string& answer = clientData["number"];
 
-        auto it = answer.begin();
-
-        while(it != answer.end() && std::isdigit(*it)) ++it;
+        std::regex reg("^-*[0-9]+");
 
         nlohmann::json jsonAnswer;
 
         //Answer is not a valid number
-        if(answer.empty() || it != answer.end()) {
+        if(answer.empty() || !std::regex_match(answer, reg)) {
             jsonAnswer["server_answer_type"] = "invalid_number";
         }
         else {

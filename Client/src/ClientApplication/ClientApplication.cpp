@@ -1,20 +1,28 @@
 #include "ClientApplication/ClientApplication.hpp"
 
+#include "ClientApplication/HumanProgram.hpp"
+#include "ClientApplication/IAProgram.hpp"
+
 #include "nlohmann/json.hpp"
 
 namespace nApplication
 {
 
-    ClientApplication::ClientApplication(const std::string &iClientName, const std::string &iHost, int iPort) :
+    ClientApplication::ClientApplication(const std::string &iClientName, const std::string &iHost, int iPort, bool iIAMode) :
         mName(iClientName),
         mHost(iHost),
-        mPort(iPort)
+        mPort(iPort),
+        mIAMode(iIAMode)
     {
-
+        if(iIAMode)
+            mProgram = new IAProgram();
+        else
+            mProgram = new HumanProgram();
     }
 
     ClientApplication::~ClientApplication()
     {
+        delete mProgram;
         mClient->stop();
     }
 
@@ -53,10 +61,8 @@ namespace nApplication
 
     void ClientApplication::Run()
     {
-        std::cout<<"Enter a number"<<std::endl;
 
-        std::string number;
-        std::cin>>number;
+        std::string number = mProgram->GetInput();
 
         nlohmann::json jsonAnswer;
         jsonAnswer["name"] = mName;
@@ -75,9 +81,15 @@ namespace nApplication
                 else if(serverAnswer["server_answer_type"] == "number_check") {
                     auto answer = serverAnswer["server_answer"];
                     if(answer == "lower")
-                        std::cout<<"its lower !"<<std::endl;
+                    {
+                        std::cout<<"It's lower !"<<std::endl;
+                        mProgram->GetLowerValue();
+                    }
                     else if(answer == "upper")
+                    {
                         std::cout<<"It's upper !"<<std::endl;
+                        mProgram->GetUpperValue();
+                    }
                     else
                     {
                         std::cout<<"Correct answer ! Your score: "<<serverAnswer["score"]<<std::endl;

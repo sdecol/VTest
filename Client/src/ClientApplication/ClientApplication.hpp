@@ -7,11 +7,13 @@
 namespace nApplication
 {
 
+    class ClientProgram;
+
     class ClientApplication
     {
     public:
 
-        ClientApplication( const std::string& iClientName, const std::string& iHost,int iPort);
+        ClientApplication( const std::string& iClientName, const std::string& iHost,int iPort, bool iIAMode);
         ~ClientApplication();
 
     public:
@@ -34,8 +36,10 @@ namespace nApplication
         std::string mHost;
         int mPort;
         bool mIsRunning = false;
+        bool mIAMode = false;
 
         std::unique_ptr<httplib::Client> mClient = nullptr;
+        ClientProgram* mProgram = nullptr;
     };
 
 } //nApplication
