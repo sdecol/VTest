@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ServerApplication/ConnectedClient.hpp"
+#include "ServerApplication/GameHistory.hpp"
 
 #include "httplib/httplib.h"
 #include "nlohmann/json.hpp"
@@ -42,6 +43,8 @@ namespace nApplication
 
         void CheckClientTimeout();
 
+        GameHistory* GetPendingGame(const std::string& iPlayerName);
+
     private:
 
         httplib::Server mServer;
@@ -56,6 +59,7 @@ namespace nApplication
 
         std::vector<ConnectedClient> mClients;
         std::atomic_bool mClientLock = true;
+        std::vector<GameHistory> mHistory;
     };
 
 } //nApplication

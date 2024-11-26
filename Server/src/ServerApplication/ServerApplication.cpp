@@ -76,13 +76,36 @@ namespace nApplication
             answer["message"] = "A client with the same name already exists";
             oRes.set_content(answer.dump(), "application/json");
         } else {
-            std::cout << "New client connected: " << clientName << std::endl;
+
+            //Check if the client has already been playing
+            auto clientIT = std::find_if(mHistory.begin(), mHistory.end(), [clientName](const GameHistory& iEntry){
+
+                return iEntry.mPlayerName == clientName;
+            });
+
+            std::cout << (clientIT != mHistory.end() ? "Welcome back !" : "New client connected: ") << clientName << std::endl;
             int newClientID = mCurrentClientID++;
             mClients.emplace_back(newClientID, clientName, GenerateRandomNumber(), isIA);
             nlohmann::json answer;
             answer["connection_status"] = "success";
             answer["client_id"] = newClientID;
             oRes.set_content(answer.dump(), "application/json");
+
+            //We check if there's a pending game for this player (just in case the client closed and reopened before timeout
+            auto pendingGameIT = std::find_if(mHistory.begin(), mHistory.end(), [clientName](const GameHistory& iEntry){
+
+                return iEntry.mPlayerName == clientName && iEntry.mGameState == GameHistory::GameState::Pending;
+            });
+
+            //If no pending game has been found, we add a new entry for this player
+            if(pendingGameIT == mHistory.end()) {
+                GameHistory entry;
+                entry.mPlayerName = clientName;
+                entry.mBeginTime = std::chrono::system_clock::now();
+                entry.mNbTry = 0;
+                entry.mGameState = GameHistory::GameState::Pending;
+                mHistory.emplace_back(entry);
+            }
         }
 
         mClientLock = true;
@@ -121,16 +144,37 @@ namespace nApplication
         } else {
             clientIT->mScore++;
 
+            GameHistory* history = nullptr;
+
+            if(!clientIT->mIsIA)
+            {
+                history = GetPendingGame(clientIT->mName);
+                assert(history != nullptr); //There should be a pending game registered !
+            }
+
+            if(history != nullptr)
+                history->mNbTry = clientIT->mScore;
+
             jsonAnswer["server_answer_type"] = "number_check";
             int number = std::stoi(answer);
             if (number == clientIT->mRandomNumber) {
+
                 jsonAnswer["server_answer"] = "success";
                 jsonAnswer["score"] = std::to_string(clientIT->mScore);
                 mClients.erase(clientIT);
+
+                if(history != nullptr)
+                    history->mGameState = GameHistory::GameState::Win;
+
             } else {
+
                 if (mLimit >= 0 && clientIT->mScore == mLimit) {
                     jsonAnswer["server_answer_type"] = "limit_exceeded";
                     jsonAnswer["good_answer"] = std::to_string(clientIT->mRandomNumber);
+
+                    if(history != nullptr)
+                        history->mGameState = GameHistory::GameState::Loose;
+
                 } else {
                     if (number > clientIT->mRandomNumber)
                         jsonAnswer["server_answer"] = "lower";
@@ -194,10 +238,35 @@ namespace nApplication
 
                 if (it != mClients.end()) {
                     std::cout << "Client timeout: " << (it->mIsIA ? std::to_string(it->mID) : it->mName) << std::endl;
+
+                    if(!it->mIsIA)
+                    {
+                        GameHistory *history = GetPendingGame(it->mName);
+
+                        if (history != nullptr) {
+                            history->mGameState = GameHistory::GameState::GaveUp;
+                            history->RecordEndTime();
+                        }
+                    }
+
                     mClients.erase(it);
                 }
             }
         }
+    }
+
+    GameHistory* ServerApplication::GetPendingGame(const std::string &iPlayerName)
+    {
+        auto it = std::find_if(mHistory.begin(), mHistory.end(), [iPlayerName](const GameHistory& iGame){
+
+            return iGame.mPlayerName == iPlayerName && iGame.mGameState == GameHistory::GameState::Pending;
+
+        });
+
+        if(it == mHistory.end())
+            return nullptr;
+
+        return &(*it);
     }
 
 } // nApplication
