@@ -1,4 +1,6 @@
-#include "ArgumentParser.hpp"
+#include "ArgumentParser/BoolArgumentParser.hpp"
+#include "ArgumentParser/IntArgumentParser.hpp"
+#include "ArgumentParser/StringArgumentParser.hpp"
 
 #include "ClientApplication/ClientApplication.hpp"
 
@@ -6,15 +8,15 @@ int main(int argc, char** argv)
 {
     std::vector<nCommon::ArgumentParser*> parsers;
 
-    nCommon::ArgumentParser hostParser("host", nCommon::ArgumentParser::String, "localhost");
+    nCommon::StringArgumentParser hostParser("host", "localhost");
     hostParser.AddValidArguments({"-h", "--host"});
     parsers.push_back(&hostParser);
 
-    nCommon::ArgumentParser portParser("port", nCommon::ArgumentParser::Number, "4242");
+    nCommon::IntArgumentParser portParser("port", "4242");
     portParser.AddValidArguments({"-p", "--port"});
     parsers.push_back(&portParser);
 
-    nCommon::ArgumentParser nameParser("name", nCommon::ArgumentParser::String, "");
+    nCommon::StringArgumentParser nameParser("name", "");
     nameParser.AddValidArguments({"-n", "--name"});
     parsers.push_back(&nameParser);
 
@@ -48,7 +50,7 @@ int main(int argc, char** argv)
         return 0;
     }
 
-    nApplication::ClientApplication app(nameParser.Value(), hostParser.Value(), portParser.ToInt());
+    nApplication::ClientApplication app(nameParser.Value(), hostParser.Value(), portParser.Value());
 
     app.Start();
 

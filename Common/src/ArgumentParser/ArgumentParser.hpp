@@ -1,7 +1,6 @@
 #pragma once
 
 #include <algorithm>
-#include <cassert>
 #include <string>
 #include <vector>
 
@@ -10,20 +9,17 @@ namespace nCommon
 
 class ArgumentParser
 {
-
 public:
-
-    enum ArgumentType
-    {
-        Number,
-        Range,
-        String
-    };
 
     // Construction / Destruction
 
-    explicit ArgumentParser( const std::string & iID, ArgumentType iType, const std::string& iDefaultValue);
-    ~ArgumentParser() = default;
+    ArgumentParser( const std::string & iID, const std::string& iDefaultValue) :
+        mID(iID),
+        mDefaultValue(iDefaultValue)
+    {
+
+    };
+    virtual ~ArgumentParser() = default;
 
     // Arguments validation
     inline void AddValidArguments(const std::vector<std::string>& iArguments) noexcept { mValidArguments.insert(mValidArguments.end(), iArguments.begin(), iArguments.end());}
@@ -33,24 +29,15 @@ public:
     inline bool IsValidArgument(const std::string& iArgument) const noexcept { return std::find(mValidArguments.begin(), mValidArguments.end(), iArgument) != mValidArguments.end();}
 
     //Checks if the given value is valid and assign it to mValue if so
-    void ParseValue(const std::string& iValue);
+    virtual void ParseValue(const std::string& iValue) = 0;
 
-    [[nodiscard]]
-    inline std::string Value() const noexcept { return mValue; }
+    //Should be called if the corresponding argument has been sent by the user
+    virtual void Activate() {}
 
-    //Asserts that this argument can be converted into a int and returns the converted value
-    [[nodiscard]]
-    inline int ToInt() const { assert(mType == Number); return mValue.empty() ? std::stoi(mDefaultValue) : std::stoi(mValue); }
-
-    [[nodiscard]]
-    std::pair<int,int> GetBounds();
-
-private:
+protected:
 
     std::string mID;
-    ArgumentType mType;
     std::vector<std::string> mValidArguments;
-    std::string mValue;
     std::string mDefaultValue;
 
 };

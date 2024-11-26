@@ -1,6 +1,6 @@
-#include <complex>
-
-#include "ArgumentParser.hpp"
+#include "ArgumentParser/ArgumentParser.hpp"
+#include "ArgumentParser/BoundsArgumentParser.hpp"
+#include "ArgumentParser/IntArgumentParser.hpp"
 #include "ServerApplication/ServerApplication.hpp"
 
 #include <iostream>
@@ -10,47 +10,49 @@ int main(int argc, char** argv)
 {
     std::vector<nCommon::ArgumentParser*> parsers;
 
-    nCommon::ArgumentParser portParser("port", nCommon::ArgumentParser::Number, "4242");
+    nCommon::IntArgumentParser portParser("port", "4242");
     portParser.AddValidArguments({"-p", "--port"});
     parsers.push_back(&portParser);
 
-    nCommon::ArgumentParser limitParser("limit", nCommon::ArgumentParser::Number, "-1");
+    nCommon::IntArgumentParser limitParser("limit", "-1");
     limitParser.AddValidArguments({"-l", "--limit"});
     parsers.push_back(&limitParser);
 
-    nCommon::ArgumentParser boundsParser("bounds", nCommon::ArgumentParser::Range, "1,100");
+    nCommon::BoundsArgumentParser boundsParser("bounds", "1,100");
     boundsParser.AddValidArguments({"-b", "--bounds"});
     parsers.push_back(&boundsParser);
 
     std::string argument;
 
     //We start bind checking arguments received
+
     for(int i = 1;i < argc; i+=2) {
 
-        argument = argv[i];
+         argument = argv[i];
 
-        bool argumentFound = false;
+         bool argumentFound = false;
 
-        for(auto* parser : parsers)
-        {
-            if(parser->IsValidArgument(argument)) {
+         for(auto* parser : parsers)
+         {
+             if(parser->IsValidArgument(argument)) {
 
-                if(i < argc-1)
-                    parser->ParseValue(argv[i+1]);
+                 parser->Activate();
+                 if(i < argc-1)
+                     parser->ParseValue(argv[i+1]);
 
-                argumentFound = true;
+                 argumentFound = true;
 
-            }
-        }
+             }
+         }
 
-        if(!argumentFound)
-            std::cout<<"Invalid argument: "<<argument<<std::endl;
-    }
+         if(!argumentFound)
+             std::cout<<"Invalid argument: "<<argument<<std::endl;
+     }
 
     //We start the server application and let it run its cycle
 
-    auto bounds = boundsParser.GetBounds();
-    nApplication::ServerApplication app(portParser.ToInt(), limitParser.ToInt(), bounds.first, bounds.second);
+    auto bounds = boundsParser.Value();
+    nApplication::ServerApplication app(portParser.Value(), limitParser.Value(), bounds.first, bounds.second);
     app.Start();
 
     return 0;
