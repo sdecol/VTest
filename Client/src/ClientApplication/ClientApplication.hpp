@@ -40,6 +40,7 @@ namespace nApplication
 
     private:
 
+        int mClientID = -1;
         std::string mName;
         std::string mHost;
         int mPort;

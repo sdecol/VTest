@@ -52,6 +52,7 @@ namespace nApplication
         int mLimit = -1;
         int mMinValue = 0;
         int mMaxValue = 0;
+        int mCurrentClientID = 0;
 
         std::vector<ConnectedClient> mClients;
         std::atomic_bool mClientLock = true;

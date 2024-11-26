@@ -2,11 +2,12 @@
 
 namespace nApplication {
 
-    ConnectedClient::ConnectedClient(const std::string &iIP, const std::string &iName, int iNumber) :
-        mIP(iIP),
+    ConnectedClient::ConnectedClient(int iID, const std::string &iName, int iNumber, bool iIA) :
+        mID(iID),
         mName(iName),
         mRandomNumber(iNumber),
-        mScore(0)
+        mScore(0),
+        mIsIA(iIA)
     {
         mLastMessageTime = std::chrono::system_clock::now();
     }

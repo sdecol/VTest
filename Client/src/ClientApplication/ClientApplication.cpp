@@ -38,6 +38,8 @@ namespace nApplication
         //We connect the client to the server and send in the request the informations of the client
 
         nlohmann::json clientData;
+        clientData["id"] = mClientID;
+        clientData["is_ia"] = mIAMode;
         clientData["name"] = mName;
 
         auto res = mClient->Post("/client_connect", clientData.dump(), "application/json");
@@ -51,6 +53,7 @@ namespace nApplication
 
                 if(answer["connection_status"] == "success") {
                     mIsRunning = true;
+                    mClientID = answer["client_id"];
                     std::cout<<"Connection to the server successfull !"<<std::endl;
                 }
                 else
@@ -71,6 +74,7 @@ namespace nApplication
                 //We send a ping to notify the server that this client is still connected
                 nlohmann::json pingBody;
                 pingBody["name"] = mName;
+                pingBody["id"] = mClientID;
                 auto pingRes = mClient->Post("/ping", pingBody.dump(), "application/json");
 
                 if (!pingRes || pingRes->status != 200) {
@@ -87,6 +91,7 @@ namespace nApplication
         std::string number = mProgram->GetInput();
 
         nlohmann::json jsonAnswer;
+        jsonAnswer["id"] = mClientID;
         jsonAnswer["name"] = mName;
         jsonAnswer["number"] = number;
 

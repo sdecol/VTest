@@ -12,12 +12,13 @@ public:
 
     // Construction / Destruction
 
-    ConnectedClient( const std::string& iIP, const std::string& iName, int iNumber);
+    ConnectedClient( int iID, const std::string& iName, int iNumber, bool iIA);
     ~ConnectedClient() = default;
 
 public:
 
-std::string mIP;
+int mID = 0;
+bool mIsIA = false;
 std::string mName;
 int mRandomNumber;
 int mScore;

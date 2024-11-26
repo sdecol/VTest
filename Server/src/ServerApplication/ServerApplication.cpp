@@ -61,23 +61,27 @@ namespace nApplication
         //TODO: manage invalid json
         auto clientData = nlohmann::json::parse(iReq.body);
         const std::string &clientName = clientData["name"];
+        int clientID = clientData["id"];
+        bool isIA = clientData["is_ia"];
 
-        auto clientIT = std::find_if(mClients.begin(), mClients.end(), [clientName](const ConnectedClient &iClient)
+        auto clientIT = std::find_if(mClients.begin(), mClients.end(), [&clientName, &clientID](const ConnectedClient &iClient)
         {
-            return iClient.mName == clientName;
+            return iClient.mIsIA ? iClient.mID == clientID : iClient.mName == clientName;
         });
 
         if (clientIT != mClients.end()) {
             std::cout << "Client already exists: " << clientName << std::endl;
             nlohmann::json answer;
             answer["connection_status"] = "failure";
-            answer["message"] = "A client when the same name already exists";
+            answer["message"] = "A client with the same name already exists";
             oRes.set_content(answer.dump(), "application/json");
         } else {
             std::cout << "New client connected: " << clientName << std::endl;
-            mClients.emplace_back(iReq.remote_addr, clientName, GenerateRandomNumber());
+            int newClientID = mCurrentClientID++;
+            mClients.emplace_back(newClientID, clientName, GenerateRandomNumber(), isIA);
             nlohmann::json answer;
             answer["connection_status"] = "success";
+            answer["client_id"] = newClientID;
             oRes.set_content(answer.dump(), "application/json");
         }
 
@@ -90,10 +94,11 @@ namespace nApplication
         auto clientData = nlohmann::json::parse(iReq.body);
 
         const std::string &clientName = clientData["name"];
+        int clientID = clientData["id"];
 
-        auto clientIT = std::find_if(mClients.begin(), mClients.end(), [clientName](const ConnectedClient &iClient)
+        auto clientIT = std::find_if(mClients.begin(), mClients.end(), [&clientName, &clientID](const ConnectedClient &iClient)
         {
-            return iClient.mName == clientName;
+            return iClient.mIsIA ? iClient.mID == clientID : iClient.mName == clientName;
         });
 
         if (clientIT == mClients.end()) {
@@ -148,10 +153,11 @@ namespace nApplication
         auto body = nlohmann::json::parse(iReq.body);
 
         const std::string &name = body["name"];
+        int clientID = body["id"];
 
-        auto it = std::find_if(mClients.begin(), mClients.end(), [name](const ConnectedClient &iClient)
+        auto it = std::find_if(mClients.begin(), mClients.end(), [&name, &clientID](const ConnectedClient &iClient)
         {
-            return iClient.mName == name;
+            return iClient.mIsIA ? iClient.mID == clientID : iClient.mName == name;
         });
 
         if (it == mClients.end())
@@ -187,7 +193,7 @@ namespace nApplication
                 });
 
                 if (it != mClients.end()) {
-                    std::cout << "Client timeout: " << it->mName << std::endl;
+                    std::cout << "Client timeout: " << (it->mIsIA ? std::to_string(it->mID) : it->mName) << std::endl;
                     mClients.erase(it);
                 }
             }
