@@ -42,6 +42,9 @@ namespace nApplication
 
         void ProcessServerAnswer(const nlohmann::json& iServerAnswer);
 
+        //Sends a ping message to the server
+        void SendPing();
+
     private:
 
         int mClientID = -1;

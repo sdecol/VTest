@@ -100,6 +100,7 @@ namespace nApplication
         {
             std::cout<<"Failed to read request body"<<std::endl;
             oRes.set_content("INVALID_JSON", "text/plain");
+            oRes.status = 400;
             return;
         }
 
@@ -203,6 +204,7 @@ namespace nApplication
                 history->mNbTry = connectedClient->mScore;
 
             jsonAnswer["server_answer_type"] = "number_check";
+
             int number = std::stoi(answer);
             if (number == connectedClient->mRandomNumber)
             {
@@ -249,9 +251,20 @@ namespace nApplication
     {
         if (!mClientLock)
             return;
-        //TODO handle invalid json
 
-        auto body = nlohmann::json::parse(iReq.body);
+        nlohmann::json body;
+
+        try
+        {
+            body = nlohmann::json::parse(iReq.body);
+        }
+        catch( const std::exception& e)
+        {
+            oRes.status = 400;
+            std::cerr<<"Failed to read request body"<<std::endl;
+            oRes.set_content("invalid_json", "tex/plain");
+            return;
+        }
 
         const std::string& name = body["name"];
         int clientID = body["id"];
@@ -383,7 +396,7 @@ namespace nApplication
             historyFile.close();
         }
         else
-            std::cerr<<"Can't read from the history file !"<<std::endl;
+            std::cout<<"Can't read from the history file !"<<std::endl;
     }
 
 } // nApplication

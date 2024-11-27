@@ -49,8 +49,17 @@ namespace nApplication
         {
             if (res->status == 200)
             {
-                auto answer = nlohmann::json::parse(res->body);
-                //TODO handle invalid json
+                nlohmann::json answer;
+
+                try
+                {
+                    answer = nlohmann::json::parse(res->body);
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr<<"Can't read the request body"<<std::endl;
+                    return;
+                }
 
                 if (answer["connection_status"] == "success")
                 {
@@ -61,6 +70,8 @@ namespace nApplication
                 else
                     std::cout << "Error when connecting to the server : " << answer["message"] << std::endl;
             }
+            else if(res->status == 400)
+                std::cerr<<"The server couldn't read the last request"<<std::endl;
             else
                 std::cout << "Invalid status code when connecting: " << res->status << std::endl;
         }
@@ -69,27 +80,7 @@ namespace nApplication
 
         mPingThread = std::thread([this]
                                   {
-
-                                      while (mIsRunning)
-                                      {
-
-                                          //We send one ping per second only
-                                          std::this_thread::sleep_for(1000ms);
-
-                                          //We send a ping to notify the server that this client is still connected
-                                          nlohmann::json pingBody;
-                                          pingBody["name"] = mName;
-                                          pingBody["id"] = mClientID;
-
-                                          auto pingRes = mClient->Post("/ping", pingBody.dump(), "application/json");
-
-                                          if (!pingRes || pingRes->status != 200)
-                                          {
-                                              std::cout << "Can't reach the server. Closing..." << std::endl;
-                                              mIsRunning = false;
-                                              return;
-                                          }
-                                      }
+                                      SendPing();
                                   });
     }
 
@@ -109,8 +100,17 @@ namespace nApplication
             if (res->status == 200)
             {
 
-                //TODO handle invalid json
-                auto serverAnswer = nlohmann::json::parse(res->body);
+                nlohmann::json  serverAnswer;
+
+                try
+                {
+                    serverAnswer = nlohmann::json::parse(res->body);
+                }
+                catch(std::exception& e)
+                {
+                    std::cerr<<"Can't read the request body"<<std::endl;
+                    return;
+                }
                 if (serverAnswer["server_answer_type"] == "invalid_number")
                     std::cout << "Invalid number entered !" << std::endl;
                 else if (serverAnswer["server_answer_type"] == "number_check")
@@ -129,6 +129,8 @@ namespace nApplication
                     return;
                 }
             }
+            else if(res->status == 400)
+                std::cerr<<"The server couldn't read the last request"<<std::endl;
             else
                 std::cout << "Error : bad answer status : " << res->status << std::endl;
         }
@@ -156,5 +158,26 @@ namespace nApplication
         }
     }
 
+    void ClientApplication::SendPing()
+    {
+        while (mIsRunning)
+        {
+            //We send one ping per second only
+            std::this_thread::sleep_for(1000ms);
 
+            //We send a ping to notify the server that this client is still connected
+            nlohmann::json pingBody;
+            pingBody["name"] = mName;
+            pingBody["id"] = mClientID;
+
+            auto pingRes = mClient->Post("/ping", pingBody.dump(), "application/json");
+
+            if (!pingRes || pingRes->status != 200)
+            {
+                std::cout << "Can't reach the server. Closing..." << std::endl;
+                mIsRunning = false;
+                return;
+            }
+        }
+    }
 }
