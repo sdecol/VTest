@@ -28,6 +28,9 @@ namespace nApplication
         // Initializes the server
         void Start();
 
+        //Waits for the server to be closed with a keyboard input
+        void Run();
+
         //Stops the server
         void Quit();
 
@@ -49,9 +52,17 @@ namespace nApplication
 
         GameHistory* GetPendingGame(const std::string& iPlayerName);
 
+        //Saves the game history in a "history.json" file next to the executable of the server
+        void SaveGameHistory();
+
+        //Loads the history of the server from the "history.json" file and rebuilds the history list from it
+        void LoadGameHistory();
+
     private:
 
         httplib::Server mServer;
+        std::thread mServerThread;
+        std::thread mPingThread;
 
         bool mIsRunning = false;
 

@@ -1,7 +1,9 @@
 #pragma once
 
-#include <string>
+#include "nlohmann/json.hpp"
+
 #include <chrono>
+#include <string>
 
 namespace nApplication
 {
@@ -29,6 +31,13 @@ namespace nApplication
         {
             mEndTime = std::chrono::system_clock::now();
         }
+
+        //Converts the data to json format
+        [[nodiscard]]
+        nlohmann::json ToJson() const;
+
+        //Fill data with the given json object
+        void FromJson(const nlohmann::json& iJson);
 
     public:
 

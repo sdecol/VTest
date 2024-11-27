@@ -28,5 +28,10 @@ int main(int argc, char** argv)
     nApplication::ServerApplication app(portParser.Value(), limitParser.Value(), bounds.first, bounds.second);
     app.Start();
 
+    while(app.IsRunning())
+        app.Run();
+
+    app.Quit();
+
     return 0;
 }

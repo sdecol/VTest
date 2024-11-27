@@ -1,5 +1,6 @@
 #include "ServerApplication/ServerApplication.hpp"
 
+#include <fstream>
 #include <random>
 #include <regex>
 
@@ -23,6 +24,9 @@ namespace nApplication
     ServerApplication::Start()
     {
         mIsRunning = true;
+
+        LoadGameHistory();
+
         mServer.Post("/client_connect", [this](const httplib::Request& iReq, httplib::Response& oRes)
         {
             AnswerClientConnection(iReq, oRes);
@@ -40,19 +44,35 @@ namespace nApplication
 
         //Using a separate thread to check if clients are connected
 
-        std::thread sleepThread([this]()
+        mPingThread = std::thread([this]()
                                 {
                                     CheckClientTimeout();
                                 });
 
 
-        mServer.listen("0.0.0.0", mPort);
-        sleepThread.join();
+        mServerThread = std::thread([this]{
+            mServer.listen("0.0.0.0", mPort);
+        });
+    }
+
+    void ServerApplication::Run()
+    {
+        std::string input;
+
+        std::cout<<"Enter \"exit\" to close the server"<<std::endl;
+        std::cin>>input;
+
+        if(input == "exit")
+            mIsRunning = false;
     }
 
     void ServerApplication::Quit()
     {
         mServer.stop();
+        mServerThread.join();
+        mPingThread.join();
+
+        SaveGameHistory();
     }
 
     void ServerApplication::AnswerClientConnection(const httplib::Request& iReq, httplib::Response& oRes)
@@ -288,6 +308,64 @@ namespace nApplication
             return nullptr;
 
         return &(*it);
+    }
+
+    void ServerApplication::SaveGameHistory()
+    {
+        if(mHistory.empty())
+            return;
+
+        std::ofstream historyFile("game_history.json");
+
+        nlohmann::json jsonArray = nlohmann::json::array();
+
+        //To have automatic formated array
+        for(const auto& history : mHistory)
+            jsonArray.push_back(history.ToJson());
+
+        if(historyFile.is_open())
+        {
+            historyFile << jsonArray.dump(4);
+            historyFile.close();
+        }
+        else
+            std::cerr<<"Can't write to history file!"<<std::endl;
+    }
+
+    void ServerApplication::LoadGameHistory()
+    {
+        std::ifstream historyFile("game_history.json");
+
+        if(historyFile.is_open())
+        {
+            nlohmann::json array;
+            try
+            {
+                historyFile >> array;
+
+                if(array.is_array())
+                {
+                    for(const auto& jsonObj : array)
+                    {
+                        GameHistory history;
+                        history.FromJson(jsonObj);
+                        mHistory.push_back(history);
+                    }
+                }
+                else
+                {
+                    std::cerr<<"json history data is not a valid array"<<std::endl;
+                }
+            }
+            catch(const std::exception& e)
+            {
+                std::cerr<<"Failed to retrieve json data"<<std::endl;
+            }
+
+            historyFile.close();
+        }
+        else
+            std::cerr<<"Can't read from the history file !"<<std::endl;
     }
 
 } // nApplication
