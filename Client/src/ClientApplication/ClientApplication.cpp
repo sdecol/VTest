@@ -88,6 +88,8 @@ namespace nApplication
 
     void ClientApplication::Run()
     {
+        //Getting the number to send to the server
+
         std::string number = mProgram->GetInput();
 
         nlohmann::json jsonAnswer;
@@ -95,6 +97,7 @@ namespace nApplication
         jsonAnswer["name"] = mName;
         jsonAnswer["number"] = number;
 
+        //Sending the number to the server
         auto res = mClient->Post("/client_answer", jsonAnswer.dump(), "application/json");
 
         if (res)
@@ -104,6 +107,7 @@ namespace nApplication
 
                 nlohmann::json  serverAnswer;
 
+                //Reading the answer of the server from the request body
                 try
                 {
                     serverAnswer = nlohmann::json::parse(res->body);
@@ -113,15 +117,22 @@ namespace nApplication
                     std::cerr<<"Can't read the request body"<<std::endl;
                     return;
                 }
-                if (serverAnswer["server_answer_type"] == "invalid_number")
-                    std::cout << "Invalid number entered !" << std::endl;
-                else if (serverAnswer["server_answer_type"] == "number_check")
-                {
 
+                //We check the answer of the server
+
+                if (serverAnswer["server_answer_type"] == "invalid_number")
+                {
+                    std::cout << "Invalid number entered !" << std::endl;
+                    return; //Nothing to do, we just run the next cycle
+                }
+
+                //The server answered, we check what kind of answer it returned
+                if (serverAnswer["server_answer_type"] == "number_check")
+                {
                     ProcessServerAnswer(serverAnswer);
 
                     if (!mIsRunning)
-                        return;
+                        return; // We won the game
                 }
                 else if (serverAnswer["server_answer_type"] == "limit_exceeded")
                 {
