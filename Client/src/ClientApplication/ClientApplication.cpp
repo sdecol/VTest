@@ -43,6 +43,7 @@ namespace nApplication
         clientData["is_ia"] = mIAMode;
         clientData["name"] = mName;
 
+        //Connecting to the server
         auto res = mClient->Post("/client_connect", clientData.dump(), "application/json");
 
         if (res)
@@ -74,14 +75,15 @@ namespace nApplication
                 std::cerr<<"The server couldn't read the last request"<<std::endl;
             else
                 std::cout << "Invalid status code when connecting: " << res->status << std::endl;
+
+            //Starting sending ping messages
+            mPingThread = std::thread([this]
+                                      {
+                                          SendPing();
+                                      });
         }
         else
             std::cout << "Unable to connect to the server" << std::endl;
-
-        mPingThread = std::thread([this]
-                                  {
-                                      SendPing();
-                                  });
     }
 
     void ClientApplication::Run()
@@ -125,6 +127,7 @@ namespace nApplication
                 {
                     std::cout << "You exceeded the number of tries. The good answer was:" << serverAnswer["good_answer"]
                               << std::endl;
+                    DisplayHistory(serverAnswer);
                     mIsRunning = false;
                     return;
                 }
@@ -154,6 +157,7 @@ namespace nApplication
         else
         {
             std::cout << "Correct answer ! Your score: " << iServerAnswer["score"] << std::endl;
+            DisplayHistory(iServerAnswer);
             mIsRunning = false;
         }
     }
@@ -179,5 +183,31 @@ namespace nApplication
                 return;
             }
         }
+    }
+
+    void ClientApplication::DisplayHistory(const nlohmann::json& iServerAnswer) const
+    {
+        if(mIAMode)
+            return;
+
+        nlohmann::json history;
+        try
+        {
+            history = iServerAnswer["history"];
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Couldn't read history from the server !"<<std::endl;
+        }
+
+        std::cout<<std::endl;
+        std::cout<<"============BEST SCORES============"<<std::endl;
+
+        for(const auto& jsonObject : history)
+        {
+            std::cout<<" - "<<jsonObject["score"]<<std::endl;
+        }
+
+        std::cout<<"==================================="<<std::endl;
     }
 }

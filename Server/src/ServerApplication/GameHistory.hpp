@@ -45,7 +45,7 @@ namespace nApplication
         std::string mPlayerIP;
         std::chrono::time_point<std::chrono::system_clock> mBeginTime;
         std::chrono::time_point<std::chrono::system_clock> mEndTime;
-        int mNbTry = 0;
+        int mScore = 0;
         GameState mGameState = GameState::Pending;
     };
 

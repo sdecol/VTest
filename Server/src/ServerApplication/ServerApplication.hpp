@@ -63,6 +63,13 @@ namespace nApplication
         //Loads the history of the server from the "history.json" file and rebuilds the history list from it
         void LoadGameHistory();
 
+        //Returns the history in json format for the given client and sort it by score
+        //Keeps only the first best games according to the defined limit
+        std::vector<nlohmann::json> GetHistoryForClient(const ConnectedClient* iClient);
+
+        //Writes the history for the given client into the server answer
+        void WriteJSonHistory(const ConnectedClient* iClient, nlohmann::json& oServerAnswer);
+
     private:
 
         httplib::Server mServer;

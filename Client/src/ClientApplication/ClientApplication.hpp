@@ -45,6 +45,9 @@ namespace nApplication
         //Sends a ping message to the server
         void SendPing();
 
+        //Display history sent in json by the server
+        void DisplayHistory(const nlohmann::json& iServerAnswer) const;
+
     private:
 
         int mClientID = -1;

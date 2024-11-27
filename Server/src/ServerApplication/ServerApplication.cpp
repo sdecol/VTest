@@ -5,6 +5,7 @@
 #include <regex>
 
 #define SERVER_TIMEOUT 10000
+#define BEST_SCORE_COUNT 5
 
 namespace nApplication
 {
@@ -45,24 +46,25 @@ namespace nApplication
         //Using a separate thread to check if clients are connected
 
         mPingThread = std::thread([this]()
-                                {
-                                    CheckClientTimeout();
-                                });
+                                  {
+                                      CheckClientTimeout();
+                                  });
 
 
-        mServerThread = std::thread([this]{
-            mServer.listen("0.0.0.0", mPort);
-        });
+        mServerThread = std::thread([this]
+                                    {
+                                        mServer.listen("0.0.0.0", mPort);
+                                    });
     }
 
     void ServerApplication::Run()
     {
         std::string input;
 
-        std::cout<<"Enter \"exit\" to close the server"<<std::endl;
-        std::cin>>input;
+        std::cout << "Enter \"exit\" to close the server" << std::endl;
+        std::cin >> input;
 
-        if(input == "exit")
+        if (input == "exit")
             mIsRunning = false;
     }
 
@@ -78,7 +80,8 @@ namespace nApplication
     ConnectedClient*
     ServerApplication::GetClient(int iID, const std::string& iPlayerName, const std::string& iClientIP)
     {
-        auto it = std::find_if(mClients.begin(), mClients.end(), [iID, iPlayerName, iClientIP](const auto& iClient){
+        auto it = std::find_if(mClients.begin(), mClients.end(), [iID, iPlayerName, iClientIP](const auto& iClient)
+        {
 
             return iClient.mIsIA ? iClient.mID == iID : iClient.mName == iPlayerName && iClient.mIP == iClientIP;
         });
@@ -96,9 +99,9 @@ namespace nApplication
         {
             clientData = nlohmann::json::parse(iReq.body);
         }
-        catch(const std::exception& e)
+        catch (const std::exception& e)
         {
-            std::cout<<"Failed to read request body"<<std::endl;
+            std::cout << "Failed to read request body" << std::endl;
             oRes.set_content("INVALID_JSON", "text/plain");
             oRes.status = 400;
             return;
@@ -148,7 +151,7 @@ namespace nApplication
                 entry.mPlayerName = clientName;
                 entry.mPlayerIP = iReq.remote_addr;
                 entry.mBeginTime = std::chrono::system_clock::now();
-                entry.mNbTry = 0;
+                entry.mScore = 0;
                 entry.mGameState = GameHistory::GameState::Pending;
                 mHistory.emplace_back(entry);
             }
@@ -201,7 +204,7 @@ namespace nApplication
             }
 
             if (history != nullptr)
-                history->mNbTry = connectedClient->mScore;
+                history->mScore = connectedClient->mScore;
 
             jsonAnswer["server_answer_type"] = "number_check";
 
@@ -210,16 +213,23 @@ namespace nApplication
             {
                 jsonAnswer["server_answer"] = "success";
                 jsonAnswer["score"] = std::to_string(connectedClient->mScore);
-                auto it = std::find_if(mClients.begin(), mClients.end(), [clientID, &clientName, &clientIP](const auto& iClient){
 
-                    return iClient.mIsIA ? iClient.mID == clientID : iClient.mName == clientName && iClient.mIP == clientIP;
-                });
+                auto it = std::find_if(mClients.begin(), mClients.end(),
+                                       [clientID, &clientName, &clientIP](const auto& iClient)
+                                       {
 
-                if(it != mClients.end())
+                                           return iClient.mIsIA ? iClient.mID == clientID :
+                                                  iClient.mName == clientName && iClient.mIP == clientIP;
+                                       });
+
+                if (it != mClients.end())
                     mClients.erase(it);
 
                 if (history != nullptr)
+                {
+                    WriteJSonHistory(connectedClient, jsonAnswer);
                     history->mGameState = GameHistory::GameState::Win;
+                }
 
             }
             else
@@ -230,7 +240,10 @@ namespace nApplication
                     jsonAnswer["good_answer"] = std::to_string(connectedClient->mRandomNumber);
 
                     if (history != nullptr)
+                    {
                         history->mGameState = GameHistory::GameState::Loose;
+                        WriteJSonHistory(connectedClient, jsonAnswer);
+                    }
 
                 }
                 else
@@ -258,10 +271,10 @@ namespace nApplication
         {
             body = nlohmann::json::parse(iReq.body);
         }
-        catch( const std::exception& e)
+        catch (const std::exception& e)
         {
             oRes.status = 400;
-            std::cerr<<"Failed to read request body"<<std::endl;
+            std::cerr << "Failed to read request body" << std::endl;
             oRes.set_content("invalid_json", "tex/plain");
             return;
         }
@@ -331,7 +344,8 @@ namespace nApplication
         auto it = std::find_if(mHistory.begin(), mHistory.end(), [&iPlayerName, &iPlayerIP](const auto& iGame)
         {
 
-            return iGame.mPlayerName == iPlayerName && iGame.mPlayerIP == iPlayerIP && iGame.mGameState == GameHistory::GameState::Pending;
+            return iGame.mPlayerName == iPlayerName && iGame.mPlayerIP == iPlayerIP &&
+                   iGame.mGameState == GameHistory::GameState::Pending;
 
         });
 
@@ -343,7 +357,7 @@ namespace nApplication
 
     void ServerApplication::SaveGameHistory()
     {
-        if(mHistory.empty())
+        if (mHistory.empty())
             return;
 
         std::ofstream historyFile("game_history.json");
@@ -351,32 +365,32 @@ namespace nApplication
         nlohmann::json jsonArray = nlohmann::json::array();
 
         //To have automatic formated array
-        for(const auto& history : mHistory)
+        for (const auto& history: mHistory)
             jsonArray.push_back(history.ToJson());
 
-        if(historyFile.is_open())
+        if (historyFile.is_open())
         {
             historyFile << jsonArray.dump(4);
             historyFile.close();
         }
         else
-            std::cerr<<"Can't write to history file!"<<std::endl;
+            std::cerr << "Can't write to history file!" << std::endl;
     }
 
     void ServerApplication::LoadGameHistory()
     {
         std::ifstream historyFile("game_history.json");
 
-        if(historyFile.is_open())
+        if (historyFile.is_open())
         {
             nlohmann::json array;
             try
             {
                 historyFile >> array;
 
-                if(array.is_array())
+                if (array.is_array())
                 {
-                    for(const auto& jsonObj : array)
+                    for (const auto& jsonObj: array)
                     {
                         GameHistory history;
                         history.FromJson(jsonObj);
@@ -385,18 +399,54 @@ namespace nApplication
                 }
                 else
                 {
-                    std::cerr<<"json history data is not a valid array"<<std::endl;
+                    std::cerr << "json history data is not a valid array" << std::endl;
                 }
             }
-            catch(const std::exception& e)
+            catch (const std::exception& e)
             {
-                std::cerr<<"Failed to retrieve json data"<<std::endl;
+                std::cerr << "Failed to retrieve json data" << std::endl;
             }
 
             historyFile.close();
         }
         else
-            std::cout<<"Can't read from the history file !"<<std::endl;
+            std::cout << "Can't read from the history file !" << std::endl;
+    }
+
+    std::vector<nlohmann::json> ServerApplication::GetHistoryForClient(const nApplication::ConnectedClient* iClient)
+    {
+        assert(iClient != nullptr);
+        std::vector<nlohmann::json> result;
+        std::vector<GameHistory> clientHistory;
+
+        std::copy_if(mHistory.begin(), mHistory.end(), std::back_inserter(clientHistory),
+                     [iClient](const auto& iHistory)
+                     {
+                         return iHistory.mPlayerName == iClient->mName && iHistory.mPlayerIP == iClient->mIP;
+                     });
+
+        std::sort(clientHistory.begin(), clientHistory.end(), [](const auto& iFirst, const auto& iSecond)
+        {
+            return iFirst.mScore < iSecond.mScore;
+        });
+
+        for (size_t i = 0; i < clientHistory.size() && i < BEST_SCORE_COUNT; i++)
+            result.emplace_back(clientHistory[i].ToJson());
+
+        return result;
+    }
+
+    void ServerApplication::WriteJSonHistory(const nApplication::ConnectedClient* iClient,
+                                             nlohmann::json& oServerAnswer)
+    {
+        auto clientHistory = GetHistoryForClient(iClient);
+
+        nlohmann::json array;
+
+        for (auto& history: clientHistory)
+            array.emplace_back(history);
+
+        oServerAnswer["history"] = array;
     }
 
 } // nApplication
