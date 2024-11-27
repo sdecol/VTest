@@ -17,7 +17,8 @@ namespace nApplication
     {
     public:
 
-        ClientApplication( const std::string& iClientName, const std::string& iHost,int iPort, bool iIAMode);
+        ClientApplication(const std::string& iClientName, const std::string& iHost, int iPort, bool iIAMode);
+
         ~ClientApplication();
 
     public:
@@ -25,7 +26,10 @@ namespace nApplication
         // Getters / setters
 
         [[nodiscard]]
-        inline bool IsRunning() const noexcept{ return mIsRunning; }
+        inline bool IsRunning() const noexcept
+        {
+            return mIsRunning;
+        }
 
     public:
 

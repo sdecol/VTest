@@ -6,7 +6,8 @@
 #include <random>
 #include <thread>
 
-namespace nApplication {
+namespace nApplication
+{
 
     using namespace std::chrono_literals;
 
@@ -25,7 +26,7 @@ namespace nApplication {
         std::uniform_int_distribution<int> dist(mMinValue, mMaxValue);
 
         mCurrentValue = dist(engine);
-        std::cout<<"IA sending number: "<<mCurrentValue<<std::endl;
+        std::cout << "IA sending number: " << mCurrentValue << std::endl;
         return std::to_string(mCurrentValue);
     }
 
@@ -38,8 +39,6 @@ namespace nApplication {
     {
         mMinValue = mCurrentValue;
     }
-
-
 
 
 } // nApplication

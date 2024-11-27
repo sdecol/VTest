@@ -5,20 +5,27 @@
 namespace nApplication
 {
 
-class ClientProgram {
+    class ClientProgram
+    {
 
     public:
 
-    //Construction / Destruction
+        //Construction / Destruction
 
-    ClientProgram() = default;
-    virtual ~ClientProgram() = default;
+        ClientProgram() = default;
 
-    virtual std::string GetInput() = 0;
+        virtual ~ClientProgram() = default;
 
-    virtual void GetLowerValue(){}
-    virtual void GetUpperValue(){}
+        virtual std::string GetInput() = 0;
 
-};
+        virtual void GetLowerValue()
+        {
+        }
+
+        virtual void GetUpperValue()
+        {
+        }
+
+    };
 
 } // nCommon

@@ -5,13 +5,13 @@
 
 namespace nCommon
 {
-    BoundsArgumentParser::BoundsArgumentParser(const std::string & iID, const std::string& iDefaultValue) :
-        ArgumentParserTemplate<std::pair<int, int>>(iID, iDefaultValue)
+    BoundsArgumentParser::BoundsArgumentParser(const std::string& iID, const std::string& iDefaultValue) :
+            ArgumentParserTemplate<std::pair<int, int>>(iID, iDefaultValue)
     {
         mValue = ParseBounds(mDefaultValue);
     }
 
-    void BoundsArgumentParser::ParseValue(const std::string &iValue)
+    void BoundsArgumentParser::ParseValue(const std::string& iValue)
     {
         std::regex reg("^[0-9]+,[0-9]+");
 
@@ -20,13 +20,13 @@ namespace nCommon
     }
 
 
-    std::pair<int, int> BoundsArgumentParser::ParseBounds(const std::string &iValue)
+    std::pair<int, int> BoundsArgumentParser::ParseBounds(const std::string& iValue)
     {
-        std::stringstream  stream(iValue);
+        std::stringstream stream(iValue);
         std::string strValue;
         std::vector<std::string> bounds;
 
-        while( std::getline(stream, strValue, ','))
+        while (std::getline(stream, strValue, ','))
         {
             bounds.push_back(strValue);
         }

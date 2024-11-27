@@ -2,17 +2,22 @@
 
 #include "ClientApplication/ClientProgram.hpp"
 
-namespace nApplication {
+namespace nApplication
+{
 
-class HumanProgram: public ClientProgram {
+    class HumanProgram : public ClientProgram
+    {
 
-public:
+    public:
 
-    HumanProgram() : ClientProgram(){}
-    virtual ~HumanProgram() = default;
+        HumanProgram() : ClientProgram()
+        {
+        }
 
-    std::string GetInput() override;
+        virtual ~HumanProgram() = default;
 
-};
+        std::string GetInput() override;
+
+    };
 
 } // nApplication

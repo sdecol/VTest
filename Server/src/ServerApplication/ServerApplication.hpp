@@ -16,10 +16,14 @@ namespace nApplication
     public:
 
         // Construction / Destruction
-        ServerApplication( int iPort, int iLimit, int iMinValue, int iMaxValue);
+        ServerApplication(int iPort, int iLimit, int iMinValue, int iMaxValue);
+
         ~ServerApplication() = default;
 
-        inline bool IsRunning() const noexcept { return mIsRunning; }
+        inline bool IsRunning() const noexcept
+        {
+            return mIsRunning;
+        }
 
         // Initializes the server
         void Start();

@@ -2,26 +2,31 @@
 
 #include "ClientApplication/ClientProgram.hpp"
 
-namespace nApplication {
+namespace nApplication
+{
 
-class IAProgram : public ClientProgram {
+    class IAProgram : public ClientProgram
+    {
 
-public:
+    public:
 
-    IAProgram();
-    virtual ~IAProgram() = default;
+        IAProgram();
 
-public:
+        virtual ~IAProgram() = default;
 
-    std::string GetInput() override;
-    void GetLowerValue() override;
-    void GetUpperValue() override;
+    public:
 
-private:
+        std::string GetInput() override;
 
-    int mCurrentValue = 0;
-    int mMinValue = 0;
-    int mMaxValue = 0;
-};
+        void GetLowerValue() override;
+
+        void GetUpperValue() override;
+
+    private:
+
+        int mCurrentValue = 0;
+        int mMinValue = 0;
+        int mMaxValue = 0;
+    };
 
 } // nApplication

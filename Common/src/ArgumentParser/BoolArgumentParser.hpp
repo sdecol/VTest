@@ -2,20 +2,28 @@
 
 #include "ArgumentParser/ArgumentParserTemplate.hpp"
 
-namespace nCommon {
+namespace nCommon
+{
 
-class BoolArgumentParser : public ArgumentParserTemplate<bool> {
+    class BoolArgumentParser : public ArgumentParserTemplate<bool>
+    {
 
-public:
+    public:
 
-    BoolArgumentParser(const std::string & iID, const std::string& iDefaultValue) : ArgumentParserTemplate<bool>(iID, iDefaultValue) { mValue = false; }
-    ~BoolArgumentParser() = default;
+        BoolArgumentParser(const std::string& iID, const std::string& iDefaultValue) : ArgumentParserTemplate<bool>(iID,
+                                                                                                                    iDefaultValue)
+        {
+            mValue = false;
+        }
 
-public:
+        ~BoolArgumentParser() = default;
 
-    void ParseValue(const std::string &iValue) override;
-    void Activate() override;
+    public:
 
-};
+        void ParseValue(const std::string& iValue) override;
+
+        void Activate() override;
+
+    };
 
 } // nCommon

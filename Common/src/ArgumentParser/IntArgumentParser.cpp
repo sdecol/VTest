@@ -5,7 +5,7 @@
 namespace nCommon
 {
 
-    void IntArgumentParser::ParseValue(const std::string &iValue)
+    void IntArgumentParser::ParseValue(const std::string& iValue)
     {
         std::regex reg("^[0-9]+");
 

@@ -23,9 +23,9 @@ int main(int argc, char** argv)
     nCommon::ArgumentManager::ParseArguments(argc, argv, {&hostParser, &portParser, &nameParser, &autoParser});
 
     //Empty name found, just return
-    if(nameParser.Value().empty() && !autoParser.Value())
+    if (nameParser.Value().empty() && !autoParser.Value())
     {
-        std::cout<<"Enter a valid name"<<std::endl;
+        std::cout << "Enter a valid name" << std::endl;
         return 0;
     }
 
@@ -34,7 +34,7 @@ int main(int argc, char** argv)
 
     app.Start();
 
-    while(app.IsRunning())
+    while (app.IsRunning())
     {
         app.Run();
     }

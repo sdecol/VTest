@@ -20,11 +20,15 @@ namespace nApplication
     public:
 
         GameHistory() = default;
+
         ~GameHistory() = default;
 
     public:
 
-        inline void RecordEndTime(){ mEndTime = std::chrono::system_clock::now();}
+        inline void RecordEndTime()
+        {
+            mEndTime = std::chrono::system_clock::now();
+        }
 
     public:
 

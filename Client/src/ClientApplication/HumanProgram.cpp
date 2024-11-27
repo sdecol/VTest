@@ -8,8 +8,8 @@ namespace nApplication
     std::string HumanProgram::GetInput()
     {
         std::string number;
-        std::cout<<"Enter a number"<<std::endl;
-        std::cin>>number;
+        std::cout << "Enter a number" << std::endl;
+        std::cin >> number;
 
         return number;
     }

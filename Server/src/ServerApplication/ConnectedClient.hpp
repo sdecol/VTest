@@ -3,27 +3,29 @@
 #include <chrono>
 #include <string>
 
-namespace nApplication {
-
-class ConnectedClient
+namespace nApplication
 {
 
-public:
+    class ConnectedClient
+    {
 
-    // Construction / Destruction
+    public:
 
-    ConnectedClient( int iID, const std::string& iName, int iNumber, bool iIA);
-    ~ConnectedClient() = default;
+        // Construction / Destruction
 
-public:
+        ConnectedClient(int iID, const std::string& iName, int iNumber, bool iIA);
 
-int mID = 0;
-bool mIsIA = false;
-std::string mName;
-int mRandomNumber;
-int mScore;
-std::chrono::time_point<std::chrono::system_clock> mLastMessageTime;
+        ~ConnectedClient() = default;
 
-};
+    public:
+
+        int mID = 0;
+        bool mIsIA = false;
+        std::string mName;
+        int mRandomNumber;
+        int mScore;
+        std::chrono::time_point<std::chrono::system_clock> mLastMessageTime;
+
+    };
 
 } // nApplication

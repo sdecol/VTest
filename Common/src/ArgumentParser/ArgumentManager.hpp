@@ -2,16 +2,18 @@
 
 #include <vector>
 
-namespace nCommon {
+namespace nCommon
+{
 
-class ArgumentParser;
+    class ArgumentParser;
 
-class ArgumentManager {
+    class ArgumentManager
+    {
 
-public:
+    public:
 
-static void ParseArguments(int iArgc, char** iArgv, const std::vector<ArgumentParser*>& iParsers);
+        static void ParseArguments(int iArgc, char** iArgv, const std::vector<ArgumentParser*>& iParsers);
 
-};
+    };
 
 } // nCommon

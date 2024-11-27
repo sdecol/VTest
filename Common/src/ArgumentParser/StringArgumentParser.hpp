@@ -2,20 +2,26 @@
 
 #include "ArgumentParser/ArgumentParserTemplate.hpp"
 
-namespace nCommon {
-
-class StringArgumentParser : public ArgumentParserTemplate<std::string>
+namespace nCommon
 {
-public:
 
-    // Construction / Destruction
+    class StringArgumentParser : public ArgumentParserTemplate<std::string>
+    {
+    public:
 
-    StringArgumentParser( const std::string & iID, const std::string& iDefaultValue) : ArgumentParserTemplate<std::string>(iID, iDefaultValue){ mValue = mDefaultValue; }
-    virtual ~StringArgumentParser() = default;
+        // Construction / Destruction
 
-public:
+        StringArgumentParser(const std::string& iID, const std::string& iDefaultValue)
+                : ArgumentParserTemplate<std::string>(iID, iDefaultValue)
+        {
+            mValue = mDefaultValue;
+        }
 
-    void ParseValue(const std::string &iValue) override;
-};
+        virtual ~StringArgumentParser() = default;
+
+    public:
+
+        void ParseValue(const std::string& iValue) override;
+    };
 
 } // nCommon

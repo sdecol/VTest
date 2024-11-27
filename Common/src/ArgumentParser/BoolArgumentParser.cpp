@@ -1,8 +1,9 @@
 #include "ArgumentParser/BoolArgumentParser.hpp"
 
-namespace nCommon {
+namespace nCommon
+{
 
-    void BoolArgumentParser::ParseValue(const std::string &iValue)
+    void BoolArgumentParser::ParseValue(const std::string& iValue)
     {
 
     }

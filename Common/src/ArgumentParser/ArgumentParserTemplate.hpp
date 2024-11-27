@@ -4,20 +4,31 @@
 
 namespace nCommon
 {
-    template< class T>
+    template<class T>
     class ArgumentParserTemplate : public ArgumentParser
     {
     public:
 
-        ArgumentParserTemplate(const std::string & iID, const std::string& iDefaultValue) : ArgumentParser(iID, iDefaultValue){}
-        virtual ~ArgumentParserTemplate(){}
+        ArgumentParserTemplate(const std::string& iID, const std::string& iDefaultValue) : ArgumentParser(iID,
+                                                                                                          iDefaultValue)
+        {
+        }
+
+        virtual ~ArgumentParserTemplate()
+        {
+        }
 
         [[nodiscard]]
-        inline T Value() const noexcept { return mValue; }
+        inline T Value() const noexcept
+        {
+            return mValue;
+        }
 
     public:
 
-        void ParseValue(const std::string &iValue) override{}
+        void ParseValue(const std::string& iValue) override
+        {
+        }
 
     protected:
 

@@ -5,35 +5,39 @@
 
 #include "ArgumentParser/ArgumentParser.hpp"
 
-namespace nCommon {
-
-void ArgumentManager::ParseArguments(int iArgc, char **iArgv, const std::vector<ArgumentParser *> &iParsers)
+namespace nCommon
 {
-    std::string argument;
 
-    //We start bind checking arguments received
-    for(int i = 1;i < iArgc; i+=2) {
+    void ArgumentManager::ParseArguments(int iArgc, char** iArgv, const std::vector<ArgumentParser*>& iParsers)
+    {
+        std::string argument;
 
-        argument = iArgv[i];
+        //We start bind checking arguments received
+        for (int i = 1; i < iArgc; i += 2)
+        {
 
-        bool argumentFound = false;
+            argument = iArgv[i];
 
-        for (auto *parser: iParsers) {
-            if (parser->IsValidArgument(argument)) {
+            bool argumentFound = false;
 
-                parser->Activate();
-                if (i < iArgc - 1)
-                    parser->ParseValue(iArgv[i + 1]);
+            for (auto* parser: iParsers)
+            {
+                if (parser->IsValidArgument(argument))
+                {
 
-                argumentFound = true;
+                    parser->Activate();
+                    if (i < iArgc - 1)
+                        parser->ParseValue(iArgv[i + 1]);
 
+                    argumentFound = true;
+
+                }
             }
-        }
 
-        if (!argumentFound)
-            std::cout << "Invalid argument: " << argument << std::endl;
+            if (!argumentFound)
+                std::cout << "Invalid argument: " << argument << std::endl;
+        }
     }
-}
 
 
 } // nCommon
