@@ -13,13 +13,14 @@ namespace nApplication
 
         // Construction / Destruction
 
-        ConnectedClient(int iID, const std::string& iName, int iNumber, bool iIA);
+        ConnectedClient(int iID, const std::string& iName, const std::string& iIP, int iNumber, bool iIA);
 
         ~ConnectedClient() = default;
 
     public:
 
         int mID = 0;
+        std::string mIP;
         bool mIsIA = false;
         std::string mName;
         int mRandomNumber;

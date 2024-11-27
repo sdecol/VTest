@@ -42,6 +42,7 @@ namespace nApplication
     public:
 
         std::string mPlayerName;
+        std::string mPlayerIP;
         std::chrono::time_point<std::chrono::system_clock> mBeginTime;
         std::chrono::time_point<std::chrono::system_clock> mEndTime;
         int mNbTry = 0;
