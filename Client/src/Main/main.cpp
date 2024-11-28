@@ -22,7 +22,7 @@ int main(int argc, char** argv)
     //We start bind checking arguments received
     nCommon::ArgumentManager::ParseArguments(argc, argv, {&hostParser, &portParser, &nameParser, &autoParser});
 
-    //Empty name found, just return
+    //Empty name found for human player, just return
     if (nameParser.Value().empty() && !autoParser.Value())
     {
         std::cout << "Enter a valid name" << std::endl;

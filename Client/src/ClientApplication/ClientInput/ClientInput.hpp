@@ -4,7 +4,9 @@
 
 namespace nApplication
 {
-
+    /**
+     * Base class for client inputs
+     */
     class ClientInput
     {
 
