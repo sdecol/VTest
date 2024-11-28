@@ -99,6 +99,9 @@ namespace nApplication
         jsonAnswer["name"] = mName;
         jsonAnswer["number"] = number;
 
+        if(!mIsRunning) // Jst in case ping request didn't reach the server
+            return;
+
         //Sending the number to the server
         auto res = mClient->Post("/client_answer", jsonAnswer.dump(), "application/json");
 
