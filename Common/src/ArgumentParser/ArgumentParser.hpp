@@ -45,6 +45,10 @@ namespace nCommon
         {
         }
 
+        //Returns true if this parser must have a value
+        [[nodiscard]]
+        inline virtual bool HasValue() const noexcept { return true; }
+
     protected:
 
         std::string mID; //General id for this parser

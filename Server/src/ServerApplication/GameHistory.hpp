@@ -32,7 +32,7 @@ namespace nApplication
     public:
 
         //Records the begin time for this game
-        inline void RecordBeginTime()
+        inline void RecordBeginTime() noexcept
         {
             mBeginTime = std::chrono::system_clock::now();
         }

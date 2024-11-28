@@ -132,7 +132,7 @@ namespace nApplication
                 return iEntry.mPlayerName == clientName && iEntry.mPlayerIP == clientIP;
             });
 
-            std::cout << (clientIT != mHistory.end() ? "Welcome back !" : "New client connected: ") << clientName <<
+            std::cout << (clientIT != mHistory.end() ? "Welcome back " : "New client connected: ") << clientName <<
                     std::endl;
             int newClientID = mCurrentClientID++;
             mClients.emplace_back(newClientID, clientName, iReq.remote_addr, GenerateRandomNumber(), isIA);
@@ -198,6 +198,7 @@ namespace nApplication
 
         const std::string& answer = clientData["number"];
 
+        //We check if the number sent is valid
         bool validNumber = true;
 
         int number = 0;
@@ -340,30 +341,35 @@ namespace nApplication
                 //If so, we remove it from the list
                 auto now = std::chrono::system_clock::now();
 
-                auto it = std::find_if(mClients.begin(), mClients.end(), [now](const auto& iClient)
-                {
-                    auto ellapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(
-                        now - iClient.mLastPingTime);
-                    return ellapsedTime.count() > SERVER_TIMEOUT;
-                });
+                auto it = mClients.begin();
 
-                //We print a message to tell which client has been disconnected
-                if (it != mClients.end())
+                while(it != mClients.end())
                 {
-                    std::cout << "Client timeout: " << (it->mIsIA ? std::to_string(it->mID) : it->mName) << std::endl;
-
-                    if (!it->mIsIA)
+                    it = std::find_if(mClients.begin(), mClients.end(), [now](const auto& iClient)
                     {
-                        GameHistory* history = GetPendingGame(it->mName, it->mIP);
+                        auto ellapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(
+                            now - iClient.mLastPingTime);
+                        return ellapsedTime.count() > SERVER_TIMEOUT;
+                    });
 
-                        if (history != nullptr)
+                    //We print a message to tell which client has been disconnected
+                    if (it != mClients.end())
+                    {
+                        std::cout << "Client timeout: " << (it->mIsIA ? std::to_string(it->mID) : it->mName) << std::endl;
+
+                        if (!it->mIsIA)
                         {
-                            history->mGameState = GameHistory::GameState::GaveUp;
-                            history->RecordEndTime();
-                        }
-                    }
+                            GameHistory* history = GetPendingGame(it->mName, it->mIP);
 
-                    mClients.erase(it);
+                            if (history != nullptr)
+                            {
+                                history->mGameState = GameHistory::GameState::GaveUp;
+                                history->RecordEndTime();
+                            }
+                        }
+
+                        mClients.erase(it);
+                    }
                 }
             }
         }

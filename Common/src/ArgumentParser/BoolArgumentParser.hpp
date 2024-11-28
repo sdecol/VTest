@@ -26,6 +26,9 @@ namespace nCommon
 
         void Activate() override;
 
+        [[nodiscard]]
+        inline bool HasValue() const noexcept override { return false; }
+
     };
 
 } // nCommon

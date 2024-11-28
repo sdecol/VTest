@@ -13,10 +13,11 @@ namespace nCommon
         std::string argument;
 
         //We start bind checking arguments received
-        for (int i = 1; i < iArgc; i += 2)
+        int arg = 1;
+        while(arg < iArgc)
         {
 
-            argument = iArgv[i];
+            argument = iArgv[arg];
 
             bool argumentFound = false;
 
@@ -26,16 +27,27 @@ namespace nCommon
                 {
 
                     parser->Activate();
-                    if (i < iArgc - 1)
-                        parser->ParseValue(iArgv[i + 1]);
 
+                    if(parser->HasValue())
+                    {
+                        if (arg < iArgc - 1)
+                        {
+                            parser->ParseValue(iArgv[arg + 1]);
+                        }
+                        arg += 2;
+                    }
+                    else
+                        arg ++;
                     argumentFound = true;
 
                 }
             }
 
             if (!argumentFound)
+            {
                 std::cout << "Invalid argument: " << argument << std::endl;
+                arg++;
+            }
         }
     }
 
