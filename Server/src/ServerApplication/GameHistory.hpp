@@ -7,6 +7,9 @@
 
 namespace nApplication
 {
+    /**
+     *  A class used to store a game history for each game played for any player (if not IA)
+     */
     class GameHistory
     {
     public:
@@ -21,13 +24,21 @@ namespace nApplication
 
     public:
 
-        GameHistory() = default;
+        //Construction / Destruction
 
+        GameHistory() = default;
         ~GameHistory() = default;
 
     public:
 
-        inline void RecordEndTime()
+        //Records the begin time for this game
+        inline void RecordBeginTime()
+        {
+            mBeginTime = std::chrono::system_clock::now();
+        }
+
+        //Records the end time for this game
+        inline void RecordEndTime() noexcept
         {
             mEndTime = std::chrono::system_clock::now();
         }
@@ -36,17 +47,17 @@ namespace nApplication
         [[nodiscard]]
         nlohmann::json ToJson() const;
 
-        //Fill data with the given json object
+        //Fills data with the given json object
         void FromJson(const nlohmann::json& iJson);
 
     public:
 
-        std::string mPlayerName;
-        std::string mPlayerIP;
-        std::chrono::time_point<std::chrono::system_clock> mBeginTime;
-        std::chrono::time_point<std::chrono::system_clock> mEndTime;
-        int mScore = 0;
-        GameState mGameState = GameState::Pending;
+        std::string mPlayerName; // The name of the player
+        std::string mPlayerIP; // The ip adress of the client
+        std::chrono::time_point<std::chrono::system_clock> mBeginTime; // Start time of the represented game
+        std::chrono::time_point<std::chrono::system_clock> mEndTime; // End time of the represented game
+        int mScore = 0; // Score recorded for this game
+        GameState mGameState = GameState::Pending; // The last recorded state of the game
     };
 
 } // nApplication

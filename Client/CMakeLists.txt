@@ -10,6 +10,8 @@ set (CLIENT_SRC_FILES
 ${CMAKE_SOURCE_DIR}/src/Main/*.cpp
 ${CMAKE_SOURCE_DIR}/src/ClientApplication/*.hpp
 ${CMAKE_SOURCE_DIR}/src/ClientApplication/*.cpp
+${CMAKE_SOURCE_DIR}/src/ClientApplication/ClientInput/*.hpp
+${CMAKE_SOURCE_DIR}/src/ClientApplication/ClientInput/*.cpp
 
 )
 

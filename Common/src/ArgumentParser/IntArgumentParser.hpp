@@ -2,6 +2,9 @@
 
 namespace nCommon
 {
+    /**
+     * A class representing an integer argument parser
+     */
     class IntArgumentParser : public ArgumentParserTemplate<int>
     {
 

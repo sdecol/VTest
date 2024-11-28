@@ -11,7 +11,7 @@ namespace nApplication
             mScore(0),
             mIsIA(iIA)
     {
-        mLastMessageTime = std::chrono::system_clock::now();
+        mLastPingTime = std::chrono::system_clock::now();
     }
 
 } // nApplication

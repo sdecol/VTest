@@ -5,16 +5,16 @@
 namespace nApplication
 {
 
-    class ClientProgram
+    class ClientInput
     {
 
     public:
 
         //Construction / Destruction
 
-        ClientProgram() = default;
+        ClientInput() = default;
 
-        virtual ~ClientProgram() = default;
+        virtual ~ClientInput() = default;
 
         virtual std::string GetInput() = 0;
 
@@ -22,7 +22,7 @@ namespace nApplication
         {
         }
 
-        virtual void GetUpperValue()
+        virtual void GetHigherValue()
         {
         }
 

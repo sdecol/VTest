@@ -4,7 +4,9 @@
 
 namespace nCommon
 {
-
+    /**
+     * Class representing a boolean argument parser
+     */
     class BoolArgumentParser : public ArgumentParserTemplate<bool>
     {
 

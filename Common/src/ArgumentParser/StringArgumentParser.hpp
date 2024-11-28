@@ -4,7 +4,9 @@
 
 namespace nCommon
 {
-
+    /**
+     * A class representing a string argument parser
+     */
     class StringArgumentParser : public ArgumentParserTemplate<std::string>
     {
     public:

@@ -1,4 +1,4 @@
-#include "ClientApplication/IAProgram.hpp"
+#include "ClientApplication/ClientInput/IAInput.hpp"
 
 #include <chrono>
 #include <iostream>
@@ -11,14 +11,14 @@ namespace nApplication
 
     using namespace std::chrono_literals;
 
-    IAProgram::IAProgram() : ClientProgram()
+    IAInput::IAInput() : ClientInput()
     {
         mMinValue = std::numeric_limits<int>::min();
         mMaxValue = std::numeric_limits<int>::max();
     }
 
 
-    std::string IAProgram::GetInput()
+    std::string IAInput::GetInput()
     {
         std::this_thread::sleep_for(1000ms);
         std::random_device rd;
@@ -30,12 +30,12 @@ namespace nApplication
         return std::to_string(mCurrentValue);
     }
 
-    void IAProgram::GetLowerValue()
+    void IAInput::GetLowerValue()
     {
         mMaxValue = mCurrentValue;
     }
 
-    void IAProgram::GetUpperValue()
+    void IAInput::GetHigherValue()
     {
         mMinValue = mCurrentValue;
     }

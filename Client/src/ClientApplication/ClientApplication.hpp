@@ -6,12 +6,12 @@
 #include <memory>
 #include <string>
 
-#include "ClientProgram.hpp"
+#include "ClientApplication/ClientInput/ClientInput.hpp"
 
 namespace nApplication
 {
 
-    class ClientProgram;
+    class ClientInput;
 
     class ClientApplication
     {
@@ -36,10 +36,15 @@ namespace nApplication
         //Connects to the server
         void Start();
 
+        // Sends number to the server and process answers received
         void Run();
+
+        //Ends ping thread and stops the client
+        void Quit();
 
     private:
 
+        //Prcess the answer sent by the server after having sent a number
         void ProcessServerAnswer(const nlohmann::json& iServerAnswer);
 
         //Sends a ping message to the server
@@ -50,16 +55,16 @@ namespace nApplication
 
     private:
 
-        int mClientID = -1;
-        std::string mName;
-        std::string mHost;
-        int mPort;
-        bool mIsRunning = false;
-        bool mIAMode = false;
+        int mClientID = -1; // Id of the client (used to identify IA players)
+        std::string mName; // Name of the player
+        std::string mHost; // Host used to connect to the server
+        int mPort; // Port used to connect to the server
+        std::atomic<bool> mIsRunning = false; // True as long as the client application is running
+        bool mIAMode = false; // True if the player is an IA
 
-        std::unique_ptr<httplib::Client> mClient = nullptr;
-        ClientProgram* mProgram = nullptr;
-        std::thread mPingThread;
+        std::unique_ptr<httplib::Client> mClient = nullptr; //httplib component used to connect to the server and send requests
+        ClientInput* mPlayerInput = nullptr; // Input used by the application to get the number to send to the server
+        std::thread mPingThread; //Thread used to send ping request to the server to notify it that the client is still here
     };
 
 } //nApplication

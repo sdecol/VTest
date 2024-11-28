@@ -6,7 +6,9 @@
 
 namespace nCommon
 {
-
+    /**
+     * Base class for argument parsers
+     */
     class ArgumentParser
     {
     public:
@@ -22,7 +24,7 @@ namespace nCommon
 
         virtual ~ArgumentParser() = default;
 
-        // Arguments validation
+        // Adds one or many argument ids for this parser
         inline void AddValidArguments(const std::vector<std::string>& iArguments) noexcept
         {
             mValidArguments.insert(mValidArguments.end(), iArguments.begin(), iArguments.end());
@@ -45,9 +47,9 @@ namespace nCommon
 
     protected:
 
-        std::string mID;
-        std::vector<std::string> mValidArguments;
-        std::string mDefaultValue;
+        std::string mID; //General id for this parser
+        std::vector<std::string> mValidArguments; // Valid arguments for this parser (ex : "-n", --name")
+        std::string mDefaultValue; // Default value used if the user provided a non valid one
 
     };
 

@@ -1,7 +1,7 @@
 #include "ClientApplication/ClientApplication.hpp"
 
-#include "ClientApplication/HumanProgram.hpp"
-#include "ClientApplication/IAProgram.hpp"
+#include "ClientApplication/ClientInput/HumanInput.hpp"
+#include "ClientApplication/ClientInput/IAInput.hpp"
 
 #include "httplib/httplib.h"
 #include "nlohmann/json.hpp"
@@ -19,16 +19,14 @@ namespace nApplication
             mIAMode(iIAMode)
     {
         if (iIAMode)
-            mProgram = new IAProgram();
+            mPlayerInput = new IAInput();
         else
-            mProgram = new HumanProgram();
+            mPlayerInput = new HumanInput();
     }
 
     ClientApplication::~ClientApplication()
     {
-        delete mProgram;
-        mClient->stop();
-        mPingThread.join();
+        delete mPlayerInput;
     }
 
     void ClientApplication::Start()
@@ -52,6 +50,7 @@ namespace nApplication
             {
                 nlohmann::json answer;
 
+                //We check if json data received from the request is valid
                 try
                 {
                     answer = nlohmann::json::parse(res->body);
@@ -62,25 +61,25 @@ namespace nApplication
                     return;
                 }
 
+                // Client connected successfully, we retrieve its id from the server
                 if (answer["connection_status"] == "success")
                 {
                     mIsRunning = true;
                     mClientID = answer["client_id"];
                     std::cout << "Connection to the server successfull !" << std::endl;
+                    //Starting sending ping messages
+                    mPingThread = std::thread([this]()
+                                              {
+                                                  SendPing();
+                                              });
                 }
                 else
                     std::cout << "Error when connecting to the server : " << answer["message"] << std::endl;
             }
-            else if(res->status == 400)
+            else if(res->status == 400) // The server returned an error when trying to read body as json
                 std::cerr<<"The server couldn't read the last request"<<std::endl;
             else
                 std::cout << "Invalid status code when connecting: " << res->status << std::endl;
-
-            //Starting sending ping messages
-            mPingThread = std::thread([this]
-                                      {
-                                          SendPing();
-                                      });
         }
         else
             std::cout << "Unable to connect to the server" << std::endl;
@@ -90,7 +89,10 @@ namespace nApplication
     {
         //Getting the number to send to the server
 
-        std::string number = mProgram->GetInput();
+        std::string number = mPlayerInput->GetInput();
+
+        if(!mIsRunning) // in cas we can't reach the server from the ping request
+            return;
 
         nlohmann::json jsonAnswer;
         jsonAnswer["id"] = mClientID;
@@ -143,7 +145,7 @@ namespace nApplication
                     return;
                 }
             }
-            else if(res->status == 400)
+            else if(res->status == 400) // Server failed to read body as json
                 std::cerr<<"The server couldn't read the last request"<<std::endl;
             else
                 std::cout << "Error : bad answer status : " << res->status << std::endl;
@@ -152,18 +154,28 @@ namespace nApplication
             std::cout << "Error while sending the answer" << std::endl;
     }
 
+    void ClientApplication::Quit()
+    {
+        if(mPingThread.joinable())
+            mPingThread.join();
+        mClient->stop();
+    }
+
+
     void ClientApplication::ProcessServerAnswer(const nlohmann::json& iServerAnswer)
     {
+        //Checking the answer received from the server after the client sent his answer concerning the number to guess
+
         auto answer = iServerAnswer["server_answer"];
         if (answer == "lower")
         {
             std::cout << "It's lower !" << std::endl;
-            mProgram->GetLowerValue();
+            mPlayerInput->GetLowerValue();
         }
-        else if (answer == "upper")
+        else if (answer == "higher")
         {
-            std::cout << "It's upper !" << std::endl;
-            mProgram->GetUpperValue();
+            std::cout << "It's higher !" << std::endl;
+            mPlayerInput->GetHigherValue();
         }
         else
         {
@@ -178,7 +190,7 @@ namespace nApplication
         while (mIsRunning)
         {
             //We send one ping per second only
-            std::this_thread::sleep_for(1000ms);
+             std::this_thread::sleep_for(1000ms);
 
             //We send a ping to notify the server that this client is still connected
             nlohmann::json pingBody;
@@ -189,9 +201,8 @@ namespace nApplication
 
             if (!pingRes || pingRes->status != 200)
             {
-                std::cout << "Can't reach the server. Closing..." << std::endl;
+                std::cout << "Can't reach the server. Enter any value to exit" << std::endl;
                 mIsRunning = false;
-                return;
             }
         }
     }
@@ -201,6 +212,7 @@ namespace nApplication
         if(mIAMode)
             return;
 
+        //We check that the json data received from the server is valid
         nlohmann::json history;
         try
         {
@@ -211,6 +223,7 @@ namespace nApplication
             std::cerr << "Couldn't read history from the server !"<<std::endl;
         }
 
+        //We display the best scores of this player
         std::cout<<std::endl;
         std::cout<<"============BEST SCORES============"<<std::endl;
 

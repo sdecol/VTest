@@ -4,6 +4,9 @@
 
 namespace nCommon
 {
+    /**
+     * A class representing a bounds argument parser with a min and max
+     */
     class BoundsArgumentParser : public nCommon::ArgumentParserTemplate<std::pair<int, int> >
     {
     public:

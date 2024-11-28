@@ -5,7 +5,9 @@
 
 namespace nApplication
 {
-
+    /**
+     * A class used to store the data of a connected client
+     */
     class ConnectedClient
     {
 
@@ -19,13 +21,13 @@ namespace nApplication
 
     public:
 
-        int mID = 0;
-        std::string mIP;
-        bool mIsIA = false;
-        std::string mName;
-        int mRandomNumber;
-        int mScore;
-        std::chrono::time_point<std::chrono::system_clock> mLastMessageTime;
+        int mID = 0; // Generated if from the server
+        std::string mIP; // The ip of the client retrieved from http request
+        bool mIsIA = false; // True if the client is an IA
+        std::string mName; // The name of the player
+        int mRandomNumber; // The random number generated for this player (for the current game)
+        int mScore; // The current score of the player
+        std::chrono::time_point<std::chrono::system_clock> mLastPingTime; // Last time we received a ping request from this client.
 
     };
 

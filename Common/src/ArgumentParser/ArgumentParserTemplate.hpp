@@ -4,6 +4,9 @@
 
 namespace nCommon
 {
+    /**
+     * A template class with a template type representing the type of valud the corresponding argument should have
+     */
     template<class T>
     class ArgumentParserTemplate : public ArgumentParser
     {
@@ -32,6 +35,6 @@ namespace nCommon
 
     protected:
 
-        T mValue;
+        T mValue; // The value provided by the user (or parsed from the default value if the value sent by the user if not valid)
     };
 }

@@ -35,9 +35,9 @@ int main(int argc, char** argv)
     app.Start();
 
     while (app.IsRunning())
-    {
         app.Run();
-    }
+
+    app.Quit();
 
     return 0;
 }
