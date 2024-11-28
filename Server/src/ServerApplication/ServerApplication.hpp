@@ -42,6 +42,9 @@ namespace nApplication
         //Finds the connected client with given id, name and ip. Returns nullptr if not found
         ConnectedClient* GetClient(int iID, const std::string& iPlayerName, const std::string& iClientIP);
 
+        //Removes the given client from the list
+        void RemoveClient(const ConnectedClient& iClient);
+
         //Checks that the new client is not registered.
         //If a client with the same name already exists, we notify the client in the answer.
         //If the client has not been registered yet and has a valid name, we add a new client to the inventory.

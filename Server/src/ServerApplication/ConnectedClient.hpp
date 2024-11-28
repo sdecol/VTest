@@ -19,6 +19,7 @@ namespace nApplication
 
         ~ConnectedClient() = default;
 
+        bool operator==(const ConnectedClient& iClient) const;
     public:
 
         int mID = 0; // Generated if from the server

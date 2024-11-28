@@ -92,6 +92,15 @@ namespace nApplication
         return it == mClients.end() ? nullptr : &(*it);
     }
 
+    void ServerApplication::RemoveClient(const ConnectedClient& iClient)
+    {
+        auto it = std::find(mClients.begin(), mClients.end(), iClient);
+
+        if(it != mClients.end())
+            mClients.erase(it);
+    }
+
+
     void ServerApplication::AnswerClientConnection(const httplib::Request& iReq, httplib::Response& oRes)
     {
         mClientLock = false;
@@ -242,16 +251,9 @@ namespace nApplication
                 jsonAnswer["server_answer"] = "success";
                 jsonAnswer["score"] = std::to_string(connectedClient->mScore);
 
-                auto it = std::find_if(mClients.begin(), mClients.end(),
-                                       [clientID, &clientName, &clientIP](const auto& iClient)
-                                       {
-                                           return iClient.mIsIA
-                                                      ? iClient.mID == clientID
-                                                      : iClient.mName == clientName && iClient.mIP == clientIP;
-                                       });
-
-                if (it != mClients.end())
-                    mClients.erase(it);
+                ConnectedClient* client = GetClient(clientID, clientName, clientIP);
+                if(client != nullptr)
+                    RemoveClient(*client);
 
                 if (history != nullptr)
                 {
