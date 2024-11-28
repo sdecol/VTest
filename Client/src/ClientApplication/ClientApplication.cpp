@@ -128,7 +128,7 @@ namespace nApplication
                     return; //Nothing to do, we just run the next cycle
                 }
 
-                //The server answered, we check what kind of answer it returned
+                //The server processed the number entered, we check what kind of answer it returned
                 if (serverAnswer["server_answer_type"] == "number_check")
                 {
                     ProcessServerAnswer(serverAnswer);

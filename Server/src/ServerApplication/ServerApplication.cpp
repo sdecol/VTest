@@ -198,12 +198,23 @@ namespace nApplication
 
         const std::string& answer = clientData["number"];
 
-        std::regex reg("^-*[0-9]+");
+        bool validNumber = true;
+
+        int number = 0;
+
+        try
+        {
+            number = std::stoi(answer);
+        }
+        catch(std::exception& e)
+        {
+            validNumber = false;
+        }
 
         nlohmann::json jsonAnswer;
 
         //Answer is not a valid number
-        if (answer.empty() || !std::regex_match(answer, reg))
+        if (!validNumber)
         {
             jsonAnswer["server_answer_type"] = "invalid_number";
         } else
@@ -222,8 +233,6 @@ namespace nApplication
                 history->mScore = connectedClient->mScore;
 
             jsonAnswer["server_answer_type"] = "number_check";
-
-            int number = std::stoi(answer);
 
             //The client found the random number
             //We send him the response and his score, and his 5 best scores in json format
