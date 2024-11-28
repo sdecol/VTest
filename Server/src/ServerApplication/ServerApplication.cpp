@@ -246,6 +246,7 @@ namespace nApplication
                 if (history != nullptr)
                 {
                     history->mGameState = GameHistory::GameState::Win;
+                    history->RecordEndTime();
                     WriteJSonHistory(connectedClient, jsonAnswer);
                 }
             } else

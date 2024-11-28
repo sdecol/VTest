@@ -132,9 +132,6 @@ namespace nApplication
                 if (serverAnswer["server_answer_type"] == "number_check")
                 {
                     ProcessServerAnswer(serverAnswer);
-
-                    if (!mIsRunning)
-                        return; // We won the game
                 }
                 else if (serverAnswer["server_answer_type"] == "limit_exceeded")
                 {
@@ -142,7 +139,6 @@ namespace nApplication
                               << std::endl;
                     DisplayHistory(serverAnswer);
                     mIsRunning = false;
-                    return;
                 }
             }
             else if(res->status == 400) // Server failed to read body as json
