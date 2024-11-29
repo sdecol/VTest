@@ -14,9 +14,7 @@ namespace nApplication
         mMinValue(iMinValue),
         mMaxValue(iMaxValue)
     {
-        mMinValue = std::max<int>(mMinValue, 0);
-        mMaxValue = std::max<int>(mMaxValue, 0);
-
+        mLimit = std::max<int>(mLimit, -1);
         if (mMinValue > mMaxValue)
             std::swap(mMinValue, mMaxValue);
     }

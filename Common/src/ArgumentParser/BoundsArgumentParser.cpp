@@ -1,6 +1,7 @@
 #include "BoundsArgumentParser.hpp"
 
 #include <cassert>
+#include <iostream>
 #include <regex>
 
 namespace nCommon
@@ -13,10 +14,14 @@ namespace nCommon
 
     void BoundsArgumentParser::ParseValue(const std::string& iValue)
     {
-        std::regex reg("^[0-9]+,[0-9]+");
+        std::regex reg("^-*[0-9]+,-*[0-9]+");
 
         if (std::regex_match(iValue, reg))
             mValue = ParseBounds(iValue);
+        else
+        {
+            std::cout<<"Bad value for argument: "<<mID<<std::endl;
+        }
     }
 
 

@@ -1,5 +1,6 @@
 #include "StringArgumentParser.hpp"
 
+#include <iostream>
 #include <regex>
 
 namespace nCommon
@@ -11,7 +12,10 @@ namespace nCommon
         if (std::regex_match(iValue, reg))
             mValue = iValue;
         else
+        {
+            std::cout<<"Bad value for argument: "<<mID<<std::endl;
             mValue = mDefaultValue;
+        }
     }
 
 
